@@ -6,6 +6,7 @@ altair==5.3.0
 annotated-types==0.7.0
 anyio==4.4.0
 attrs==23.2.0
+blinker==1.8.2
 certifi==2024.7.4
 cffi==1.16.0
 charset-normalizer==3.3.2
@@ -28,6 +29,7 @@ fastapi==0.111.0
 fastapi-cli==0.0.4
 ffmpy==0.3.2
 filelock==3.15.4
+Flask==3.0.3
 flatbuffers==24.3.25
 fonttools==4.53.0
 fsspec==2024.6.1
@@ -44,6 +46,7 @@ idna==3.7
 imageio==2.34.2
 importlib_resources==6.4.0
 insightface==0.7.3
+itsdangerous==2.2.0
 jax==0.4.30
 jaxlib==0.4.30
 Jinja2==3.1.4
@@ -140,3 +143,4 @@ uvloop==0.19.0
 watchfiles==0.22.0
 wcwidth==0.2.13
 websockets==11.0.3
+Werkzeug==3.0.3
