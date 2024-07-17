@@ -37,7 +37,7 @@ clip_model, preprocess = clip.load("ViT-B/32", device=device)
 text = ["a cap", "a hat", "a sunglass", "a helmet", "a reading glass", "a mask"]
 text_tokens = clip.tokenize(text).to(device)
 
-yolo_model = YOLO("/home/abp/Documents/ABP_Face/ABP/Version2/best.pt")                                                                     # YOLO Path
+yolo_model = YOLO("/root/Documents/ABP/Version2/best.pt")                                                                     # YOLO Path
 
 mapping = {0 : "sunglasses", 1 : "sunglasses", 2 : "eyeglasses", 3 : "headware", 4 : "headware", 5 : "headware"}
 
