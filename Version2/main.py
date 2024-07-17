@@ -34,7 +34,7 @@ mp_face_mesh = mp.solutions.face_mesh.FaceMesh(
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 clip_model, preprocess = clip.load("ViT-B/32", device=device)
-text = ["a cap", "a hat", "a sunglass", "a helmet", "a transparent eyeglass", "a mask"]
+text = ["a cap", "a hat", "a sunglass", "a helmet", "a reading glass", "a mask"]
 text_tokens = clip.tokenize(text).to(device)
 
 yolo_model = YOLO("/home/abp/Documents/ABP_Face/ABP/Version2/best.pt")                                                                     # YOLO Path
