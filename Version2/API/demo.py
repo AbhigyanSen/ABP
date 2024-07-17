@@ -193,7 +193,7 @@ def detect_landmarks(image):
         return None
     return results.multi_face_landmarks[0]
 
-def get_image_path_from_url(image_url, base_folder='/home/Documents/ABP/Version2/Images'):
+def get_image_path_from_url(image_url, base_folder='/root/Documents/ABP/Version2/Images'):
     filename = os.path.basename(image_url)
     image_name = os.path.splitext(filename)[0] + '.png'
     return os.path.join(base_folder, image_name)
