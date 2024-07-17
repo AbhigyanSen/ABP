@@ -14,7 +14,7 @@ import clip
 from ultralytics import YOLO
 import requests
 from PIL import Image
-import gradio as gr
+# import gradio as gr
 from io import BytesIO
 
 try:
