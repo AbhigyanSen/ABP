@@ -34,7 +34,7 @@ mp_face_mesh = mp.solutions.face_mesh.FaceMesh(
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 clip_model, preprocess = clip.load("ViT-B/32", device=device)
-text = ["a cap", "a hat", "a sunglass", "a helmet", "a reading glass", "a mask"]
+text = ["a cap", "a hat", "a sunglass", "a helmet", "a transparent eyeglass", "a mask"]
 text_tokens = clip.tokenize(text).to(device)
 
 yolo_model = YOLO("/home/abp/Documents/ABP_Face/ABP/Version2/best.pt")                                                                     # YOLO Path
@@ -204,7 +204,7 @@ def process_single_image(image_path):
             if not bottom_face_detected:
                 error_message += "Bottom Face Error; "
             error_message = error_message.rstrip("; ")
-
+            
         return Result2, error_message
     except Exception as e:
         return 'Rejected', str(e)
@@ -224,6 +224,9 @@ def process_image_clip(image_path):
         confidence = probs[0][predicted_index]
         if confidence > 0.8:
             detected_class = text[predicted_index]
+            if detected_class == "a transparent eyeglass":
+                return "Accepted"
+            
             return f"Rejected. Error: {detected_class}"
         else:
             return "Accepted"
@@ -272,9 +275,9 @@ def get_result(image_url):
 
 
     # Delete the folders Images and TempFaces
-    # for folder in ['Images', 'TempFaces']:
-    #     if os.path.exists(folder):
-    #         shutil.rmtree(folder)
+    for folder in ['Images', 'TempFaces']:
+        if os.path.exists(folder):
+            shutil.rmtree(folder)
     return(f"Final Result: {final_result}")
 
 
