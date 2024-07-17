@@ -32,6 +32,21 @@ mp_face_mesh = mp.solutions.face_mesh.FaceMesh(
     min_tracking_confidence=0.90
 )
 
+try:
+    app = FaceAnalysis(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
+    app.prepare(ctx_id=-1)
+except Exception as e:
+    print(f"Error loading model: {e}")
+    app = None
+
+mp_face_mesh = mp.solutions.face_mesh.FaceMesh(
+    static_image_mode=True,
+    max_num_faces=1,
+    refine_landmarks=True,
+    min_detection_confidence=0.0,
+    min_tracking_confidence=0.90
+)
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 clip_model, preprocess = clip.load("ViT-B/32", device=device)
 text = ["a cap", "a hat", "a sunglass", "a helmet", "a reading glass", "a mask"]
@@ -178,7 +193,7 @@ def detect_landmarks(image):
         return None
     return results.multi_face_landmarks[0]
 
-def get_image_path_from_url(image_url, base_folder='/home/abp/Documents/ABP_Face/ABP/Version3/Images'):
+def get_image_path_from_url(image_url, base_folder='/home/Documents/ABP/Version2/Images'):
     filename = os.path.basename(image_url)
     image_name = os.path.splitext(filename)[0] + '.png'
     return os.path.join(base_folder, image_name)
@@ -209,10 +224,11 @@ def process_single_image(image_path):
     except Exception as e:
         return 'Rejected', str(e)
 
-def process_image_clip(image_url):
+def process_image_clip(image_path):
     try:
-        response = requests.get(image_url)
-        image = preprocess(Image.open(BytesIO(response.content))).unsqueeze(0).to(device)
+        # response = requests.get(image_url)
+        img = Image.open(image_path)
+        image = preprocess(img).unsqueeze(0).to(device)
         with torch.no_grad():
             image_features = clip_model.encode_image(image)
             text_features = clip_model.encode_text(text_tokens)
@@ -221,8 +237,13 @@ def process_image_clip(image_url):
 
         predicted_index = probs.argmax()
         confidence = probs[0][predicted_index]
+        print(f"{predicted_index}-______<>______{confidence}")
         if confidence > 0.8:
             detected_class = text[predicted_index]
+            if detected_class == "a transparent eyeglass":
+                print(detected_class)
+                return "Accepted"
+                        
             return f"Rejected. Error: {detected_class}"
         else:
             return "Accepted"
@@ -275,10 +296,3 @@ def get_result(image_url):
         if os.path.exists(folder):
             shutil.rmtree(folder)
     return(f"Final Result: {final_result}")
-
-if __name__=="__main__":
-    # Example usage:
-    # example_image_url = 'https://example.com/example_image.png'                                                                  # URL Input
-    example_image_url = input("Enter URL: ")
-    result = get_result(example_image_url)
-    print(result)
