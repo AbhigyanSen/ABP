@@ -209,11 +209,10 @@ def process_single_image(image_path):
     except Exception as e:
         return 'Rejected', str(e)
 
-def process_image_clip(image_path):
+def process_image_clip(image_url):
     try:
-        # response = requests.get(image_url)
-        img = Image.open(image_path)
-        image = preprocess(img).unsqueeze(0).to(device)
+        response = requests.get(image_url)
+        image = preprocess(Image.open(BytesIO(response.content))).unsqueeze(0).to(device)
         with torch.no_grad():
             image_features = clip_model.encode_image(image)
             text_features = clip_model.encode_text(text_tokens)
@@ -224,9 +223,6 @@ def process_image_clip(image_path):
         confidence = probs[0][predicted_index]
         if confidence > 0.8:
             detected_class = text[predicted_index]
-            if detected_class == "a transparent eyeglass":
-                return "Accepted"
-            
             return f"Rejected. Error: {detected_class}"
         else:
             return "Accepted"
