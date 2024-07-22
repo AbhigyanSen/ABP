@@ -125,7 +125,6 @@ def save_face(largestface, image_path, output_dir, expansion_factor=0.3):
         return False, str(e)
 
 
-
 def check_image(image_url):
     try:
         image_path, error = download_and_convert_image(image_url)
@@ -134,8 +133,7 @@ def check_image(image_url):
 
         image = cv2.imread(image_path)
         faces = app.get(image)
-        # print(f"Number of Faces: {len(faces)}")
-
+        
         if len(faces) == 1:
             success, error = crop_faces(image_path, 'TempFaces')
             if success:

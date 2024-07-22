@@ -231,7 +231,7 @@ def process_image_clip(image_path):
         else:
             return "Accepted", None
     except Exception as e:
-        return "Error processing image",f"{e}"
+        return "Rejected",f"{e}"
 
 def detect_image_class(image_path):
     try:
@@ -260,6 +260,7 @@ def get_result(image_url):
     if Result1 == 'Rejected':
         print(f"{image_url} - PART 1 Result: {Result1}. Reason: {error1}")
         final_result = "Rejected"
+        errstring += "No Face or multiple face present or Face clearly not visible or The URL is unreachable"
     else:
         image_path = get_image_path_from_url(image_url)
         Result2, errormedia = process_single_image(image_path)
