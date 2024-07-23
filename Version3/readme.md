@@ -1,3 +1,3 @@
-The major differences between Version 2 and Version 3 is: <br><br>
+The major difference between Version 2 and Version 3 is: <br><br>
 **First** <br>
 In Version 2, there were discrepancies in acceptance between Eyeglasses and Sunglasses. In Version 2, both sunglasses or eyeglasses, if detected then the Image is Rejected, whereas if eyeglasses are detected then they should be Accepted. This problem was solved in Version 3 where in YOLO (Part 4), if the detected class was found to be Eyeglass then the Image was Accepted.

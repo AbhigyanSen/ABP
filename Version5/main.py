@@ -356,4 +356,4 @@ if __name__=="__main__":
                 aadhar_out = gr.Textbox(value="", label="Output")
         facebtn.click(display_image_from_url, inputs=faceimg, outputs=face_out)
         aadharbtn.click(get_result, inputs=faceimg, outputs=aadhar_out)
-    demo.launch(share=False, server_port=7861)
+    demo.launch(share=True, server_port=7861)
