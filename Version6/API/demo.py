@@ -321,7 +321,7 @@ def get_result(image_url):
         if errornsfw:
             errstring += f"NSFW content detected: {errornsfw}. "
             final_result = "Rejected"
-            return f"Final Result: {final_result} : {errstring}"
+            return f"Final Result: {final_result}",errstring
 
         # Final Result
         accepted_count = sum([Result2 == 'Accepted', Result3 == 'Accepted', Result4 == 'Accepted'])
@@ -345,4 +345,4 @@ def get_result(image_url):
     for folder in ['Images', 'TempFaces']:
         if os.path.exists(folder):
             shutil.rmtree(folder)
-    return f"Final Result: {final_result} : {errstring}"
+    return f"Final Result: {final_result}",errstring 
