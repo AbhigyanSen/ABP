@@ -74,7 +74,7 @@ def download_and_convert_image(image_url, output_folder='Images'):
 
 def detect_nsfw(image_path):
     try:
-        img = Image.open(image_path)
+        img = cv2.imread(image_path)
         model = AutoModelForImageClassification.from_pretrained("Falconsai/nsfw_image_detection")
         processor = ViTImageProcessor.from_pretrained('Falconsai/nsfw_image_detection')
 
@@ -85,7 +85,7 @@ def detect_nsfw(image_path):
 
         predicted_label = logits.argmax(-1).item()
         label = model.config.id2label[predicted_label]
-        print(label)
+        # print(f"NSFW Label: {label}")
 
         if label == 'nsfw':
             return 'Image contains NSFW content'
@@ -101,7 +101,7 @@ def crop_faces(image_path, output_dir, expansion_factor=0.3):
         image = face_recognition.load_image_file(image_path)
         face_locations = face_recognition.face_locations(image)
         if len(face_locations) != 1:
-            return False, 'Multiple faces detected' if len(face_locations) > 1 else 'No face detected'
+            return False, 'Multiple faces detected' if len(face_locations) > 1 else 'No Face Detected'
 
         pil_image = Image.open(image_path)
         base_name = os.path.basename(image_path)
@@ -148,7 +148,6 @@ def save_face(largestface, image_path, output_dir, expansion_factor=0.3):
         face_image.save(face_path)
         return True, None
     except Exception as e:
-        print(e)
         return False, str(e)
 
 
@@ -197,7 +196,7 @@ def check_image(image_url):
                 return 'Rejected', 'Multiple faces detected'
 
         else:
-            return 'Rejected', 'No face detected'
+            return 'Rejected', 'No Face Detected'
 
     except Exception as e:
         return 'Rejected', str(e)
@@ -251,12 +250,9 @@ def process_image_clip(image_path):
         predicted_index = probs.argmax()
         confidence = probs[0][predicted_index]
         detected_class = text[predicted_index]
-        # print(f"Clip Confidence b/32 {confidence}")
+        print(f"CLIP B32 Confidence: {confidence}")
 
-        if confidence > 0.5 and (detected_class == "a sunglass" or detected_class == "a reading glass"):
-            # detected_class = text[predicted_index]
-            print(f"B 32 (50%): {detected_class}")
-            
+        if confidence > 0.5 and (detected_class == "a sunglass" or detected_class == "a reading glass"):            
             if detected_class in ["a sunglass", "a reading glass"]:
                 rn101_image = RNpreprocess(img).unsqueeze(0).to(device)
                 with torch.no_grad():
@@ -265,7 +261,7 @@ def process_image_clip(image_path):
                 rn101_predicted_index = rn101_probs.argmax()
                 rn101_confidence = rn101_probs[0][rn101_predicted_index]
                 if rn101_confidence > 0.5 and rn101textlist[rn101_predicted_index] == "a reading glass":
-                    print("Accepted by RN101")
+                    # print("Accepted by RN101")
                     return "Accepted", None
                 else:
                     return "Rejected", "RN101 model did not confirm 'reading glass' with sufficient confidence"
@@ -273,8 +269,7 @@ def process_image_clip(image_path):
                 return "Rejected", f"Error: {detected_class}"
         
         elif confidence > 0.8:
-            # detected_class = text[predicted_index]
-            print(f"B 32 (80%): {detected_class}")
+            # print(f"CLIP B32 (80%): {detected_class}")
             return "Rejected",f"Error: {detected_class}"
         
         else:
@@ -329,6 +324,9 @@ def get_result(image_url):
         accepted_count = sum([Result2 == 'Accepted', Result3 == 'Accepted', Result4 == 'Accepted'])
         if accepted_count >= 2:
             final_result = "Accepted"
+        elif errorclip == None and erroryolo == "sunglasses":
+            final_result = "Accepted"
+            print("Final Acceptance by RN101")
         else:
             final_result = "Rejected"
             if error1 is not None:
