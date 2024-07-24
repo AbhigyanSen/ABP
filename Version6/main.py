@@ -251,6 +251,7 @@ def process_image_clip(image_path):
         confidence = probs[0][predicted_index]
         detected_class = text[predicted_index]
         print(f"CLIP B32 Confidence: {confidence}")
+        print(f"Detected Class B32: {detected_class}")
 
         if confidence > 0.5 and (detected_class == "a sunglass" or detected_class == "a reading glass"):            
             if detected_class in ["a sunglass", "a reading glass"]:
@@ -260,6 +261,8 @@ def process_image_clip(image_path):
                     rn101_probs = rn101_logits_per_image.softmax(dim=-1).cpu().numpy()
                 rn101_predicted_index = rn101_probs.argmax()
                 rn101_confidence = rn101_probs[0][rn101_predicted_index]
+                print({f"RN101 Confidence: {rn101_confidence}"})
+                print(f"Predicted Index RN101: {rn101_predicted_index}")
                 if rn101_confidence > 0.5 and rn101textlist[rn101_predicted_index] == "a reading glass":
                     # print("Accepted by RN101")
                     return "Accepted", None

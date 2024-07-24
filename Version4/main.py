@@ -70,7 +70,7 @@ def download_and_convert_image(image_url, output_folder='Images'):
 
 def detect_nsfw(image_path):
     try:
-        img = Image.open(image_path)
+        img = cv2.imread(image_path)
         model = AutoModelForImageClassification.from_pretrained("Falconsai/nsfw_image_detection")
         processor = ViTImageProcessor.from_pretrained('Falconsai/nsfw_image_detection')
 
