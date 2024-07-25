@@ -52,3 +52,25 @@ or
 pip install -r requirements.txt
 python main.py
 ```
+
+## Flow Diagram
+
+```mermaid
+graph LR
+A[Insert URL] --> B[URL Handling]
+B --> C[Face Detection]
+C --> D[Mediapipe] -->G
+C --> E[CLIP B32] --> G
+C --> F[YOLO] --> G
+G[Combined Result]  --> H
+H[Final Result]
+
+style A fill:#5d687e,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+style B fill:#869bbb,stroke:#333,stroke-width:0px,color:#05014a
+style G fill:#a4b5cd,stroke:#333,stroke-width:1px,color:#05014a
+style C fill:#a4b5cd,stroke:#333,stroke-width:1px,color:#05014a
+style D fill:#5d687e,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+style E fill:#5d687e,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+style F fill:#5d687e,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+style H fill:#5d687e,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+```
