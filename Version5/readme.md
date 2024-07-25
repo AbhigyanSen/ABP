@@ -1,4 +1,4 @@
-# Face Occlusion Detection - Version 3
+# Face Occlusion Detection - Version 5
 
 ## Overview
 > Version 5 of the Face Occlusion Detection project introduces the RN101 model for enhanced classification between eyeglasses and sunglasses. This version aims to improve accuracy in identifying specific types of occlusions, thereby refining the decision-making process for image acceptance or rejection

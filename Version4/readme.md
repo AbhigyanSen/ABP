@@ -1,4 +1,4 @@
-# Face Occlusion Detection - Version 3
+# Face Occlusion Detection - Version 4
 
 ## Overview
 > Version 4 of the Face Occlusion Detection project introduces a new model integration from Falcon AI to enhance image classification capabilities. This version focuses on improving the filtering process by directly rejecting images classified as Not Safe For Work (NSFW), thus optimizing the workflow and ensuring content appropriateness.
