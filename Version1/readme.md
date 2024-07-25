@@ -1,9 +1,7 @@
 # Face Occlusion Detection - Version 1
-<p>&nbsp;</p>
 
-### Overview
+## Overview
  > Version 1 of the Face Occlusion Detection project focuses on merging all the subparts as well as implementing Gradio for demonstration purposes. It involves a sequential process to evaluate images for **Acceptance** or **Rejection** based on **Face Occlusion Analysis**.
-<p>&nbsp;</p>
 
 ## Steps Implemented in Version 1
 1. **Image URL Validation and Download**
@@ -34,13 +32,11 @@
    - Handles streaming mode for webp images.
 
 
-<p>&nbsp;</p>
 ## Decision Making
 - Images are accepted if all steps confirm the absence of significant occlusions like eyewear, headwear, or incomplete facial features.
 - Rejected images are flagged with specific errors indicating the reason for rejection.
 
 
-<p>&nbsp;</p>
 ## Installation
 To set up Version 1 locally:
 
@@ -54,6 +50,35 @@ To set up Version 1 locally:
 3. Start the Server:
    ```sh
    python gradio.api.py
-<p>&nbsp;</p>
+## Flow Diagram
+```mermaid
+graph LR
+A[Insert URL] --> B[URL Handling]
+
+B --> BA(Image Downloaded) & BB(Error Downloading)
+BB --> BC((ERROR))
+
+BA --> C[Face Detection]
+C --> CA(No Face or >1 Face) & CB(Single Face) 
+CA --> CC((REJECT)) --> G
+
+CB --> D[Mediapipe]
+D --> DA(Top/Bottom Face Error) & DB(No Error)
+DA --> DC((REJECT)) --> G
+DB --> DD((ACCEPT)) --> G
+
+CB --> E[CLIP B32]
+E --> EA(Presence of Eyewear/Headware) & EB(Eyewear/Headwear Absent)
+EA --> EC((REJECT)) --> G
+EB --> ED((ACCEPT)) --> G
+
+CB --> F[YOLO]
+F --> FA(Presence of Eyewear/Headware) & FB(Eyewear/Headwear Absent)
+FA --> FC((REJECT)) --> G
+FB --> FD((ACCEPT)) --> G
+
+G[Combined Result]  --> H
+H[Final Result]
+```
 ## Future Versions
 Future versions will build upon Version 1's foundation, integrating additional models and refining the detection process for enhanced accuracy and reliability.
