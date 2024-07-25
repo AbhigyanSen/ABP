@@ -42,9 +42,5 @@ To use the Face Occlusion Detection API:
 
 If you encounter any issues while setting up or using the API, please check the following:
 - Ensure all dependencies are installed (requirements.txt).
-
-
 - Verify the Flask server (app.py) is running on http://localhost:5001.
-
-
 - Check the input image URL and ensure it points to a valid image file.
