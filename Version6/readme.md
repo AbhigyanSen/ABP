@@ -5,11 +5,13 @@
 
 ## Model Configuration Update
 
-##### Version 5:
+#### Version 5:
 - The CLIP B32 Model was struggling to differentiate between eyeglasses and sunglasses with thresholding at **0.8**.
 
-##### Version 6:
+
+#### Version 6:
 - The Thresholding was updated from **0.8** to **0.5** to make sure that eyeglasses are parsed by RN101.
+
 
 Debugging Notes _(Developers)_:
 30:  Model Loading Error (Face Analysis)
