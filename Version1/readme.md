@@ -57,11 +57,11 @@ graph LR
 A[Insert URL] --> B[URL Handling]
 
 B --> BA(Image Downloaded) & BB(Error Downloading)
-BB --> BC((ERROR))
+BB --> BC((ERROR)) --> H
 
 BA --> C[Face Detection]
 C --> CA(No Face OR > 1 Face) & CB(Single Face) 
-CA --> CC((REJECT)) --> G
+CA --> CC((REJECT)) --> H
 
 CB --> D[Mediapipe]
 D --> DA(Top/Bottom Face Error) & DB(No Error)
@@ -113,6 +113,7 @@ style BA fill:#854442,stroke:#333,stroke-width:0.5px,color:#fff4e6
 style CB fill:#854442,stroke:#333,stroke-width:0.5px,color:#fff4e6
 style CA fill:#854442,stroke:#333,stroke-width:0.5px,color:#fff4e6
 ```
+
 
 ## Future Versions
 

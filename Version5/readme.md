@@ -1,7 +1,56 @@
-The major differences between Version 1 and Version 2 are: <br><br>
-**First** <br>
-Version 1 first downloaded the images which were used by Face-recognition in Part 1, Mediapipe in Part 2 and YOLO in Part 4. In Part 3, CLIP Model still used to parse the URLs for its Outcome. Hence, in CLIP the ImageURL is passed instead of the Image Path.
-In Version 2, the images are first downloaded and the downloaded images are used by all the models including CLIP, as this time, the models take the Image Path insetead of the Image URL. 
-<br>
-**Second** <br>
-In Version 1, if more than 1 face was detected then the Image was said to have Multiple Faces. But, in Version 2, if only 1 subject is in focus diminishing the rest then that image was said to be Single Face and passed onto the next models. Therefore eliminating the Group Photo Factor. *The problem arised here was that, the changes were reflected only in Insight Face and Face-Recognition i.e. in Part 1, but in Part 2 where the Accepted Single Face Image was to be passed to Mediapipe, Face-Recognition had to Crop 1 single Face, but which face to be cropped was a major issue. This problem was solved by creating a new function save_faces and this resulted to passing the Image PAth to the other models instead of the Image URl.
+# Face Occlusion Detection - Version 3
+
+## Overview
+> Version 5 of the Face Occlusion Detection project introduces the RN101 model for enhanced classification between eyeglasses and sunglasses. This version aims to improve accuracy in identifying specific types of occlusions, thereby refining the decision-making process for image acceptance or rejection
+
+## Integration of RN101 Model
+
+##### Version 4:
+- The CLIP B32 Model was struggling to differentiate between eyeglasses and sunglasses and hence **Rejected** eyeglasses.
+
+##### Version 5:
+- A new check was implemented by adding RN101 to confirm the presence of eyeglasses. Hence, there was an imporvement in parsing sunjects wearing eyeglasses.
+
+
+## Version 4
+
+```mermaid
+graph LR 
+I[Face Analysis & Face Recognition] 
+I --> D[Mediapipe] -->G
+I --> E[CLIP B32] --> G
+I --> F[YOLO] --> G
+G[Combined Result]  --> H
+H[Final Result]
+
+style I fill:#D3D3D3,stroke:#333,stroke-width:1px,color:#05014a
+style G fill:#D3D3D3,stroke:#333,stroke-width:1px,color:#05014a
+style D fill:#818589,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+style E fill:#818589,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+style F fill:#818589,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+style H fill:#818589,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+```
+
+## Version 5
+```mermaid
+graph LR 
+I[Image Analysis] 
+I --> D[Mediapipe] --> G
+I --> E[CLIP B32] -- SUNGLASS --> A[CLIP RN101] -- SUNGLASS --> J((REJECT)) --> G
+A[CLIP RN101] -- EYEGLASSES --> K((ACCEPT)) --> G
+E -- ANY CLASS EXCEPT SUNGLASS --> J
+E -- NO CLASS --> K
+I --> F[YOLO] --> G
+G[Combined Result]  --> H
+H[Final Result]
+
+style I fill:#a4b5cd,stroke:#333,stroke-width:1px,color:#05014a
+style G fill:#a4b5cd,stroke:#333,stroke-width:1px,color:#05014a
+style D fill:#5d687e,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+style E fill:#5d687e,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+style F fill:#5d687e,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+style H fill:#5d687e,stroke:#333,stroke-width:0.5px,color:#ddd3d1
+style A fill:#869bbb,stroke:#333,stroke-width:0px,color:#05014a
+style J fill:#ffd3b6,stroke:#333,stroke-width:0.5px,color:#960000
+style K fill:#D1FFBD,stroke:#333,stroke-width:0.5px,color:#006400
+```
