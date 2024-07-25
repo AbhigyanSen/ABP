@@ -200,6 +200,7 @@ def get_result(image_url):
         Result3 = process_image_clip(image_url)
         image_path = get_image_path_from_url(image_url)
         Result4, error4 = detect_image_class(image_path)
+
         # Combined Result
         print(f"{image_url} - PART 1 Result: {Result1}, PART 2 Result: {Result2}, PART 3 Result: {Result3}, PART 4 Result: {Result4}.")
 
@@ -216,7 +217,6 @@ def get_result(image_url):
         if os.path.exists(folder):
             shutil.rmtree(folder)
     return(f"Final Result: {final_result}")
-
 
 
 # Function to download and display the image
