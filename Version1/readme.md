@@ -2,7 +2,7 @@
 ### Overview
  > Version 1 of the Face Occlusion Detection project focuses on merging all the subparts as well as implementing Gradio for demonstration purposes. It involves a sequential process to evaluate images for **Acceptance** or **Rejection** based on **Face Occlusion Analysis**.
 
-### Steps Implemented in Version 1
+## Steps Implemented in Version 1
 1. **Image URL Validation and Download**
    - Checks the validity of the image URL.
    - Downloads the image in PNG format if the extension is supported.
@@ -30,11 +30,11 @@
    - Utilizes YOLO (v8) to detect eyewear or headwear in the downloaded images.
    - Handles streaming mode for webp images.
 
-### Decision Making
+## Decision Making
 - Images are accepted if all steps confirm the absence of significant occlusions like eyewear, headwear, or incomplete facial features.
 - Rejected images are flagged with specific errors indicating the reason for rejection.
 
-### Installation
+## Installation
 To set up Version 1 locally:
 
 1. Clone the repository:
@@ -47,5 +47,5 @@ To set up Version 1 locally:
 3. Start the Server:
    ```sh
    python gradio.api.py
-### Future Versions
+## Future Versions
 Future versions will build upon Version 1's foundation, integrating additional models and refining the detection process for enhanced accuracy and reliability.
