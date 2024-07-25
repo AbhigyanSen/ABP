@@ -5,10 +5,10 @@
 
 ## Integration of NSFW Detection Model
 
-##### Version 3:
+### Version 3:
 - No Obscence Images were **Rejected**.
 
-##### Version 4:
+### Version 4:
 - If any obscene image was found, it will be **Rejected** _(in part 1)_ now and not processed further.
 
 

@@ -5,10 +5,10 @@
 
 ## Integration of RN101 Model
 
-##### Version 4:
+### Version 4:
 - The CLIP B32 Model was struggling to differentiate between eyeglasses and sunglasses and hence **Rejected** eyeglasses.
 
-##### Version 5:
+### Version 5:
 - A new check was implemented by adding RN101 to confirm the presence of eyeglasses. Hence, there was an imporvement in parsing sunjects wearing eyeglasses.
 
 
