@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import demo
+import Test
 
 app = Flask(__name__)
 
@@ -9,7 +9,7 @@ def process_image():
         data = request.get_json()
         image_url = data['image_url']
 
-        result,err = demo.get_result(image_url)
+        result,err = Test.get_result(image_url)
 
         return jsonify({'result': result,"error":err}), 200
     except Exception as e:

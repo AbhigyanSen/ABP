@@ -22,6 +22,11 @@
 - 315: Combined Result
 - 329: Acceptance by RN101        (Eyeglass in CLIP, Sunglass in YOLO)
 
+## Error Notes:
+- If the image is too large like for example "https://cdn.abpweddings.com/documents/7207615415fe2d08eb2dbca0499fae3f/1708077441730.webp?width=150", due to the expansion factor being 30% the program is unable to crop and hence throws ERROR.
+- Exceptional Case for URL "https://cdn.abpweddings.com/documents/f36cb5718042b66939f7acea8b0420c3/1708156586921.webp", is Accepted. B32 gives a Eyewear Confidence of 45% and Headware Confidence is much lower. If fix is needed then change Confidence at Line 255 in main.py to 0.4.
+    - Similar:  + "https://cdn.abpweddings.com/documents/f1537ddc582e3712654af6a6e2127e88/1707106537072.webp"
+                + "https://cdn.abpweddings.com/documents/ee7c8ac8283b5f0fb07d1d661016cdaa/1708360968924.webp?width=150?width=150"
 
 ## Flow Diagram
 ```mermaid
