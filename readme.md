@@ -26,7 +26,7 @@ The project implements a comprehensive approach combining multiple modalities to
 
 ## Installation
 
-_This repository requires [Python](https://www.python.org/downloads/) 3.12 to run._
+_This repository requires [Python](https://www.python.org/downloads/) 3.10 or greater to run._
 ```sh
 python --version
 pip --version
