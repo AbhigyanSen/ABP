@@ -47,7 +47,7 @@ yolo_model = YOLO(YOLO_FOLDER)                                                  
 
 mapping = {0 : "sunglasses", 1 : "sunglasses", 2 : "eyeglasses", 3 : "headware", 4 : "headware", 5 : "headware"}
 
-def download_and_convert_image(image_url, output_folder='Images'):
+def download_and_convert_image(image_url, output_folder=BASE_FOLDER):
     try:
         response = requests.get(image_url)
         image_data = response.content
