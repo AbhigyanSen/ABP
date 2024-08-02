@@ -11,7 +11,7 @@
 ### Version 6:
 - The Thresholding was updated from **0.8** to **0.5** to make sure that eyeglasses are parsed by **RN101**.
 
-## Debugging Notes _(Developers)_:
+## Debugging Notes:
 - 30:  Model Loading Error        (Face Analysis)
 - 88:  NSFW Label
 - 151: print(e)                   (deleted)
