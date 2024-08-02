@@ -26,26 +26,28 @@ To set up this Version locally:
       sudo apt-get update
       ```
    - Refer to https://askubuntu.com/questions/610291/how-to-install-cmake-3-2-on-ubuntu for any issues with installing cmake.
-   ```sh
-   pip install -r requirements.txt 
-   ```
-   Alternatively the environment can also be configured using the following commands:
-   ```sh
-   pip install torch torchvision ftfy regex tqdm open_clip_torch insightface pandas openpyxl requests onnxruntime onnxruntime insightface mediapipe pillow face_recognition Flask gradio
-   pip install git+https://github.com/openai/CLIP.git
-   ```
+   - Installing using **requirements.txt**
+     ```sh
+     pip install -r requirements.txt 
+     ```
+   - Alternatively the environment can also be configured using the following **pip commands**:
+     ```sh
+     pip install torch torchvision ftfy regex tqdm open_clip_torch insightface pandas openpyxl requests onnxruntime onnxruntime insightface mediapipe pillow face_recognition Flask gradio
+     pip install git+https://github.com/openai/CLIP.git
+     ```
 3. Start the Server:
-   - Using Gradio
+   - Using **Gradio**
      ```sh
      python gradio.api.py
      ```
-   - Using Postman
+   - Using **Postman**
      ```sh
         {
             "image_url": "https://cdn.abpweddings.com/documents/5ee8649ad97d31adffe3d40c983ecc38/1707599168242.webp"
         }
      ```
-     
+   - Check the **Port Number** as it runs on **Port 5001**
+
 ## Flow Diagram
 ```mermaid
 graph LR
