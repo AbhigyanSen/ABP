@@ -1,34 +1,28 @@
-import torch
-from PIL import Image
-from transformers import AutoModelForImageClassification, ViTImageProcessor
-import torch.nn.functional as F
 import requests
-from io import BytesIO
+import cv2
+import numpy as np
+from insightface.app import FaceAnalysis
 
-# Define the image URL
-image_url = "https://cdn.abpweddings.com/documents/0340d385f44319a2e3d70dd9077c98aa/1707180598038.webp"
+def get_face_detection_confidence(image_url):
+    # Download the image from the URL
+    response = requests.get(image_url)
+    image = np.frombuffer(response.content, np.uint8)
+    image = cv2.imdecode(image, cv2.IMREAD_COLOR)
 
-# Download and open the image
-response = requests.get(image_url)
-img = Image.open(BytesIO(response.content))
+    # Initialize the FaceAnalysis model
+    app = FaceAnalysis(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])  # Add providers based on your setup
+    app.prepare(ctx_id=0, det_size=(640, 640))  # Set det_size according to your image size
 
-# Load model and processor
-model = AutoModelForImageClassification.from_pretrained("Falconsai/nsfw_image_detection")
-processor = ViTImageProcessor.from_pretrained('Falconsai/nsfw_image_detection')
+    # Detect faces in the image
+    faces = app.get(image)
 
-# Preprocess image and perform inference
-with torch.no_grad():
-    inputs = processor(images=img, return_tensors="pt")
-    outputs = model(**inputs)
-    logits = outputs.logits
+    # If faces are detected, return the confidence score
+    if faces:
+        return [face.det_score for face in faces]
+    else:
+        return "No faces detected"
 
-# Compute probabilities using softmax
-probabilities = F.softmax(logits, dim=-1)
-
-# Get predicted label and confidence
-predicted_label = logits.argmax(-1).item()
-confidence = (probabilities[0, predicted_label].item()) * 100
-
-# Print the results
-print(f"Predicted Label: {model.config.id2label[predicted_label]}")
-print(f"Confidence: {confidence:.2f}%")
+# Example usage:
+image_url = "https://img.freepik.com/premium-photo/young-handsome-man-smiling-cheerfully-feeling-happy-showing-concept-motorbike-helmet-concept_1194-360385.jpg"
+confidence_scores = get_face_detection_confidence(image_url)
+print(confidence_scores)
