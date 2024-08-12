@@ -18,8 +18,8 @@ import gradio as gr
 from io import BytesIO
 from transformers import AutoModelForImageClassification, ViTImageProcessor
 
-BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/Version8/Images"
-YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/Version8/best.pt"
+BASE_FOLDER = "/root/Documents/ABPDebugging/ABP/Version8/Images"
+YOLO_FOLDER = "/root/Documents/ABPDebugging/ABP/Version8/best.pt"
 
 
 
