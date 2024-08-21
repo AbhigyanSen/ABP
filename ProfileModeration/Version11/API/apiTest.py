@@ -15,17 +15,17 @@ def process_image():
             return jsonify({'error': 'No base64 image provided'}), 400
         
         # Call the get_result function to process the base64 image
-        final_result, error_message, confidence_scores = get_result(base64_image)
+        final_result, error_message, confidence_scores, status = get_result(base64_image)
         
         # Prepare the response
         response = {
             'result': final_result,
             'error': error_message,
-            'confidence_scores': confidence_scores
+            'confidence_scores': confidence_scores,
+            'status': status
         }
         return jsonify(response), 200
     except Exception as e:
-        
         # Handle unexpected errors
         return jsonify({'error': str(e)}), 500
 

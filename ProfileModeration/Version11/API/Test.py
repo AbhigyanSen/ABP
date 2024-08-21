@@ -53,13 +53,13 @@ rn101text = clip.tokenize(rn101textlist).to(device)
 
 # YOLO
 yolo_model = YOLO(YOLO_FOLDER)
-mapping = {0: "sunglasses", 1: "sunglasses", 2: "eyeglasses", 3: "headware", 4: "headware", 5: "headware"}
+mapping = {0 : "sunglasses", 1 : "sunglasses", 2 : "eyeglasses", 3 : "headware", 4 : "headware", 5 : "headware"}
 
 # Coversion to Image
 def base64_to_image(base64_str):
     try:
         image_data = base64.b64decode(base64_str)
-        image = Image.open(BytesIO(image_data))
+        image = Image.open(BytesIO(image_data)).convert("RGB")
         image = np.array(image)
         print("(64) Base64 Try")
         return image, None
@@ -251,27 +251,29 @@ def process_image_clip(image):
         print(f"B32 Detected Class: {detected_class} and Confidence: {confidence}")
         
         if confidence > 0.5 and (detected_class == "a sunglass" or detected_class == "a reading glass"):            
-            print("B32 Passing to RN101")
             if detected_class in ["a sunglass", "a reading glass"]:
                 rn101_image = RNpreprocess(image).unsqueeze(0).to(device)
-                
                 with torch.no_grad():
                     rn101_logits_per_image, rn101_logits_per_text = RNmodel(rn101_image, rn101text)
                     rn101_probs = rn101_logits_per_image.softmax(dim=-1).cpu().numpy()
-                detected_index = rn101_probs.argmax()
-                rn101_confidence = rn101_probs[0][detected_index]
-                detected_class = rn101textlist[detected_index]
-                print(f"RN101 Detected Class: {detected_class} and Confidence: {rn101_confidence}")
-            
-            if confidence < 0.40:
-                print("(267) CLIP RN101 Confidence Rejection")
-                return 'Rejected', f"Detected Class CLIP: {detected_class}", confidence, f"Confidence RN101: {rn101_confidence}" 
-            return 'Accepted', None, 0, None
+                rn101_predicted_index = rn101_probs.argmax()
+                rn101_confidence = rn101_probs[0][rn101_predicted_index]
+                print(f"RN101 Confidence: {rn101_confidence}")
+                print(f"Predicted Index RN101: {rn101_predicted_index}")
+                if rn101_confidence > 0.5 and rn101textlist[rn101_predicted_index] == "a reading glass":
+                    print("Accepted by RN101")
+                    return "Accepted", None, confidence, detected_class
+                else:
+                    return "Rejected", "RN101 model did not confirm 'reading glass' with sufficient confidence", confidence, detected_class
+            else:
+                return "Rejected", f"Error: {detected_class}", confidence, detected_class
+        
+        elif confidence > 0.8:
+            return "Rejected", f"Error: {detected_class}", confidence, detected_class
         
         else:
-            print("(272) High CLIP B32 Confidence Rejection")
-            return 'Rejected', f"Detected Class CLIP: {detected_class}", confidence, detected_class
-    
+            return "Accepted", None, confidence, detected_class
+        
     except Exception as e:
         print("(276) CLIP Processing Exception")
         return 'Rejected', str(e), 0, None
@@ -280,6 +282,7 @@ def process_image_clip(image):
 def process_yolo(image):
     try:
         print("(282) YOLO Processing Try")
+        image = Image.fromarray(image)
         results = yolo_model(image)
         
         if len(results[0].boxes) == 0:
@@ -309,17 +312,18 @@ def get_result(base64_image):
     final_result = ""
     errstring = ""
     confidence_scores = {}
+    status = 0  # Default status is 0 (Rejected)
 
     # Convert base64 to image and save it as image.png
     image, error = base64_to_image(base64_image)
     
     if error:
-        return 'Rejected', error, confidence_scores
+        return 'Rejected', error, confidence_scores, status
     
     image_path, error = save_image(image, 'image.png')
     
     if error:
-        return 'Rejected', error, confidence_scores
+        return 'Rejected', error, confidence_scores, status
     
     # Process the saved image
     Result1, error1 = check_image(image_path)
@@ -337,6 +341,11 @@ def get_result(base64_image):
         yolo_confidence = float(yolo_confidence) if yolo_confidence is not None else 0.0
         nsfw_confidence = float(nsfw_confidence) if nsfw_confidence is not None else 0.0
         
+        # Combined Result
+        print("\n\nCOMBINED RESULT:")
+        print(f"- \n Insight Face Result: {Result1}, \n Media pipe Result: {Result2}, \n Clip B/32 Result: {Result3}, \n yolo Result: {Result4}, \n NSFW Result: {'Rejected' if errornsfw else 'Accepted'}.")
+        print(f"\n Insight Face Error: {error1}, \n Media pipe Error: {errormedia}, \n Clip B/32 Error: {errorclip}, \n yolo error: {erroryolo}, \n NSFW error: {errornsfw}.\n")
+
         confidence_scores['CLIP B32'] = {
             "Confidence": clip_confidence,
             "Detected Class": detected_class
@@ -351,18 +360,20 @@ def get_result(base64_image):
             confidence_scores['NSFW'] = nsfw_confidence
             errstring += f"NSFW content detected: {errornsfw}. "
             final_result = "Rejected"
-            return f"Final Result: {final_result}", errstring, confidence_scores
+            status = 0
+            return f"Final Result: {final_result}", errstring, confidence_scores, status
         
         accepted_count = sum([Result2 == 'Accepted', Result3 == 'Accepted', Result4 == 'Accepted'])
         
         if accepted_count >= 2:
             final_result = "Accepted"
-        
+            status = 1
         elif errorclip is None and erroryolo == "sunglasses":
             final_result = "Accepted"
-        
+            status = 1
         else:
             final_result = "Rejected"
+            status = 0
             
             if error1 is not None:
                 errstring += "No Face or multiple faces present or Face clearly not visible or The URL is unreachable. "
@@ -379,7 +390,4 @@ def get_result(base64_image):
             shutil.rmtree(folder)
     
     # Returning Final Result
-    if final_result == "Accepted":
-        return f"Final Result: {final_result}", "", {}  # No error string or confidence scores for Accepted
-    else:
-        return f"Final Result: {final_result}", errstring, confidence_scores
+    return f"Final Result: {final_result}", errstring, confidence_scores, status
