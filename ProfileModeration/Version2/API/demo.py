@@ -14,7 +14,6 @@ import clip
 from ultralytics import YOLO
 import requests
 from PIL import Image
-# import gradio as gr
 from io import BytesIO
 
 try:
@@ -281,7 +280,7 @@ def get_result(image_url):
         # image_path = get_image_path_from_url(image_url)
         Result4, error4 = detect_image_class(image_path)
         # Combined Result
-        print(f"{image_url} - PART 1 Result: {Result1}, PART 2 Result: {Result2}, PART 3 Result: {Result3}, PART 4 Result: {Result4}.")
+        print(f"URL: {image_url} \nPART 1 Result: {Result1}, PART 2 Result: {Result2}, PART 3 Result: {Result3}, PART 4 Result: {Result4}.")
 
         # Final Result
         accepted_count = sum([Result2 == 'Accepted', Result3 == 'Accepted', Result4 == 'Accepted'])
