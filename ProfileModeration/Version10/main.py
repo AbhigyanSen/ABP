@@ -21,8 +21,6 @@ from transformers import AutoModelForImageClassification, ViTImageProcessor
 BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version8/Images"
 YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version8/best.pt"
 
-
-
 try:
     app = FaceAnalysis(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
     app.prepare(ctx_id=-1)
@@ -265,87 +263,105 @@ def process_image_clip(image_path):
                 print(f"Predicted Index RN101: {rn101_predicted_index}")
                 if rn101_confidence > 0.5 and rn101textlist[rn101_predicted_index] == "a reading glass":
                     # print("Accepted by RN101")
-                    return "Accepted", None
+                    return "Accepted", f"{detected_class}", f"{confidence:.2f}"
                 else:
-                    return "Rejected", "RN101 model did not confirm 'reading glass' with sufficient confidence"
+                    return "Rejected", f"{detected_class}", f"{confidence:.2f}"
             else:
-                return "Rejected", f"Error: {detected_class}"
+                return "Rejected", f"Error: {detected_class}", f"{confidence:.2f}"
         
         elif confidence > 0.8:
             # print(f"CLIP B32 (80%): {detected_class}")
-            return "Rejected",f"Error: {detected_class}"
+            return "Rejected", f"Error: {detected_class}", f"{confidence:.2f}"
         
         else:
-            return "Accepted", None
+            return "Accepted", "", ""  # Default acceptance if conditions are not met
     except Exception as e:
-        return "Error processing image", str(e)
+        return "Error processing image", str(e), ""
+
 
 def detect_image_class(image_path):
     try:
         source = Image.open(image_path)
         results = yolo_model(source)
         if len(results[0].boxes) == 0:
-            return "Accepted", None
+            return "Accepted", "", ""
 
         conf = torch.max(results[0].boxes.conf).item()
         if conf < 0.8:
-            return "Accepted", None
+            return "Accepted", "", ""
 
         z = torch.argmax(results[0].boxes.conf).item()
         a = int(results[0].boxes.cls[z].item())
-        if a == 2: #
-            return "Accepted", None
-        return "Rejected", mapping[a]
+        if a == 2:  #
+            return "Accepted", mapping[a], f"{conf:.2f}"
+        return "Rejected", mapping[a], f"{conf:.2f}"
     except Exception as e:
-        return "Rejected", f"{e}"
+        return "Rejected", f"{e}", ""
+
 
 def get_result(image_url):
     final_result = ""
     errstring = ""
+    reason = ""
+    explanation = ""
+    detected_classes = {
+        'CLIP': {'Class': '', 'Confidence': ''},
+        'YOLO': {'Class': '', 'Confidence': ''}
+    }
+
     Result1, error1 = check_image(image_url)
     if Result1 == 'Rejected':
         final_result = "Rejected"
+        reason += "No Face or multiple faces present, or the face is not clearly visible. "
         errstring += error1
     else:
         image_path = get_image_path_from_url(image_url)
         Result2, errormedia = process_single_image(image_path)
-        Result3, errorclip = process_image_clip(image_path)
-        Result4, erroryolo = detect_image_class(image_path)
+        Result3, class_clip, confidence_clip = process_image_clip(image_path)
+        Result4, class_yolo, confidence_yolo = detect_image_class(image_path)
         errornsfw = detect_nsfw(image_path)  # Directly get NSFW error message
 
         # Combined Result
-        print(f"{image_url} - \n Insight Face Result: {Result1}, \n Media pipe Result: {Result2}, \n Clip B/32 Result: {Result3}, \n yolo Result: {Result4}, \n NSFW Result: {'Rejected' if errornsfw else 'Accepted'}.")
-        print(f"{image_url} - \n Insight Face Error: {error1}, \n Media pipe Error: {errormedia}, \n Clip B/32 Error: {errorclip}, \n yolo error: {erroryolo}, \n NSFW error: {errornsfw}.")
+        print(f"{image_url} - \n Insight Face Result: {Result1}, \n Media pipe Result: {Result2}, \n CLIP Result: {Result3}, \n YOLO Result: {Result4}, \n NSFW Result: {'Rejected' if errornsfw else 'Accepted'}.")
+        print(f"{image_url} - \n Insight Face Error: {error1}, \n Media pipe Error: {errormedia}, \n CLIP Error: {class_clip}, \n YOLO Error: {class_yolo}, \n NSFW Error: {errornsfw}.")
 
         # Append NSFW error message only if it's NSFW
         if errornsfw:
-            errstring += f"NSFW content detected: {errornsfw}. "
+            explanation += f"NSFW content detected: {errornsfw}. "
             final_result = "Rejected"
-            return f"Final Result: {final_result} : {errstring}"
+            return f"Final Result: {final_result}\nReason: {reason}\n\nExplanation: {explanation}\nDetected Classes: {detected_classes}"
 
-        # Final Result
+        # Populate detected classes
+        if Result3 == 'Accepted':
+            detected_classes['CLIP']['Class'] = class_clip
+            detected_classes['CLIP']['Confidence'] = confidence_clip
+
+        if Result4 == 'Accepted':
+            detected_classes['YOLO']['Class'] = class_yolo
+            detected_classes['YOLO']['Confidence'] = confidence_yolo
+
+        # Final Result determination
         accepted_count = sum([Result2 == 'Accepted', Result3 == 'Accepted', Result4 == 'Accepted'])
         if accepted_count >= 2:
             final_result = "Accepted"
-        elif errorclip == None and erroryolo == "sunglasses":
-            final_result = "Accepted"
-            print("Final Acceptance by RN101")
         else:
             final_result = "Rejected"
-            if error1 is not None:
-                errstring += "No Face or multiple face present or Face clearly not visible or The URL is unreachable"
-            if errormedia is not None:
-                errstring += " - Facial Features clearly not visible"
-            if errorclip is not None:
-                errstring += " - Eyewear or headwear present"
-            if erroryolo is not None:
-                errstring += " - Eyewear or headwear present"
 
-    # Delete the folders Images and TempFaces
-    for folder in ['Images', 'TempFaces']:
-        if os.path.exists(folder):
-            shutil.rmtree(folder)
-    return f"Final Result: {final_result} : {errstring}"
+            if Result2 == 'Rejected':
+                reason += "Facial features are not clearly visible. "
+
+            if Result3 == 'Rejected':
+                reason += "Eyewear or headwear detected by CLIP. "
+
+            if Result4 == 'Rejected':
+                reason += "Eyewear or headwear detected by YOLO. "
+
+    print(f"Final Result: {final_result}")
+
+    if final_result == "Accepted":
+        return f"Final Result: {final_result}"
+    else:        
+        return f"Final Result: {final_result}\nReason: {reason.strip()}\nExplanation: {explanation.strip()}\nDetected Classes: {detected_classes}"
 
 # Function to download and display the image
 def display_image_from_url(url):
