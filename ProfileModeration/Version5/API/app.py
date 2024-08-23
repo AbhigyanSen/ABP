@@ -7,13 +7,23 @@ app = Flask(__name__)
 def process_image():
     try:
         data = request.get_json()
+        if 'image_url' not in data:
+            return jsonify({'error': 'Missing image_url parameter'}), 400
+
         image_url = data['image_url']
+        result = demo.get_result(image_url)
+        final_result, errstring = result.split(" : ", 1)
+        
+        # Final Response
+        response = {
+            'result': final_result,
+            'error': errstring
+        }
+        
+        return jsonify(response), 200
 
-        result,err = demo.get_result(image_url)
-
-        return jsonify({'result': result,"error":err}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001,host='0.0.0.0')
+    app.run(debug=True, port=5001, host='0.0.0.0')

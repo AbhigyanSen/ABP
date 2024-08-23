@@ -17,8 +17,8 @@ from PIL import Image
 from io import BytesIO
 from transformers import AutoModelForImageClassification, ViTImageProcessor
 
-BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/Version5/Images"
-YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/Version5/best.pt"
+BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version5/Images"
+YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version5/best.pt"
 
 
 
