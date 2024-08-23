@@ -17,9 +17,8 @@ from PIL import Image
 import gradio as gr
 from io import BytesIO
 
-BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/Version3/Images"
-YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/Version3/best.pt"
-
+BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version3/Images"
+YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version3/best.pt"
 
 
 try:

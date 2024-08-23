@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torchvision import transforms, models, datasets
 from PIL import Image
 from pathlib import Path
@@ -8,7 +9,7 @@ from pathlib import Path
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Define paths
-model_path = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version3/resnet_model20.pth'
+model_path = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version3/resnet_model1.pth'
 data_dir = 'Dataset'
 
 # Load class names
@@ -32,6 +33,10 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
+def fhook(module,input,output):
+    print(torch.flatten(output))
+
+
 # Prediction function
 def predict(image_path):
     image = Image.open(image_path).convert('RGB')
@@ -39,16 +44,24 @@ def predict(image_path):
 
     with torch.no_grad():
         output = model(image)
-        _, predicted = torch.max(output, 1)
+        probabilities = F.softmax(output, dim=1)
+        confidence, predicted = torch.max(probabilities, 1)
 
-    return class_names[predicted.item()]
+    class_name = class_names[predicted.item()]
+    confidence_score = confidence.item()
+    return class_name, confidence_score
 
 # Example usage
 if __name__ == "__main__":
+    model.avgpool.register_forward_hook(fhook)
+    # for a,b in model.named_modules():
+    #     print(a)
     import sys
     if len(sys.argv) != 2:
         print("Usage: python test.py <image_path>")
         sys.exit(1)
 
     image_path = sys.argv[1]
-    print(f'The document is of type: {predict(image_path)}')
+    class_name, confidence_score = predict(image_path)
+    print(f'The document is of type: {class_name}')
+    print(f'Confidence score: {confidence_score:.4f}')
