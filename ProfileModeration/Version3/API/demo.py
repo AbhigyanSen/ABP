@@ -290,4 +290,3 @@ def get_result(image_url):
         if os.path.exists(folder):
             shutil.rmtree(folder)
     return(f"Final Result: {final_result}",errstring)
-
