@@ -5,8 +5,6 @@ from io import BytesIO
 import cv2
 import numpy as np
 from PIL import Image
-import requests
-import insightface
 from insightface.app import FaceAnalysis
 import pandas as pd
 import face_recognition
@@ -16,7 +14,7 @@ import clip
 from ultralytics import YOLO
 from transformers import AutoModelForImageClassification, ViTImageProcessor
 
-
+# Note that the Images Folder is intentionally placed outside to check for the correct image being processed.
 BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version9/Images"
 YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version9/best.pt"
 
