@@ -15,8 +15,8 @@ from insightface.app import FaceAnalysis
 import numpy as np
 
 
-BASE_FOLDER = "Demo" 
-YOLO_FOLDER = "../best.pt"
+BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version12/API/Demo" 
+YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version12/best.pt"
 
 # Creating the BASE FOLDER
 if not os.path.exists(BASE_FOLDER):
@@ -173,7 +173,13 @@ def check_image(image_path):
             if success:
                 return 'Accepted', None
             else:
-                return 'Rejected', error if error else 'Face cropping failed'
+                if error == "No Face Detected":
+                    return "Rejected", 0
+                elif error == "Multiple faces detected":
+                    return 'Rejected', 1
+                else:
+                    return "Rejected", 2        #Face cropping failed'
+                
         elif len(faces) > 1:
             areas = []
             largestfacearea = 0
@@ -193,16 +199,20 @@ def check_image(image_path):
                 if success:
                     return 'Accepted', None
                 else:
-                    return 'Rejected', error if error else 'Face cropping failed'
+                    return 'Rejected', 2
+                    # return 'Rejected', error if error else 'Face cropping failed'
             else:
-                return 'Rejected', 'Multiple faces detected'
+                return 'Rejected', 1
+                # return 'Rejected', 'Multiple faces detected'
         else:
             confidence_scores = [face.det_score for face in faces] if faces else []
             error_msg = f"No Face Detected. Face Confidence Score: {confidence_scores[0]}" if confidence_scores else "No Face Detected"
-            return 'Rejected', error_msg
+            return 'Rejected', 0
+            # return 'Rejected', error_msg
     except Exception as e:
         print("(204) Insight Face Processing Exception")
-        return 'Rejected', str(e)
+        return 'Rejected', 2
+        # return 'Rejected', str(e)
 
 # MediaPipe Processing
 def detect_landmarks(image):
@@ -242,10 +252,10 @@ def process_image_clip(image):
     try:
         print("(243) CLIP B32 Processing Try")
         image = Image.fromarray(image)  # Converts NumPy array to PIL Image
-        image = preprocess(image).unsqueeze(0).to(device)  # Converts PIL Image to Tensor
+        B32image = preprocess(image).unsqueeze(0).to(device)  # Converts PIL Image to Tensor
         
         with torch.no_grad():
-            logits_per_image, logits_per_text = clip_model(image, text_tokens)
+            logits_per_image, logits_per_text = clip_model(B32image, text_tokens)
             probs = logits_per_image.softmax(dim=-1).cpu().numpy()
         
         predicted_index = probs.argmax()
@@ -256,19 +266,20 @@ def process_image_clip(image):
         if confidence > 0.5 and (detected_class == "a sunglass" or detected_class == "a reading glass"):            
             if detected_class in ["a sunglass", "a reading glass"]:
                 print("(258) CLIP RN101 Processing Try")
-                rn101_image = RNpreprocess(image).unsqueeze(0).to(device)
+
                 with torch.no_grad():
-                    rn101_logits_per_image, rn101_logits_per_text = RNmodel(rn101_image, rn101text)
+                    rn101_logits_per_image, rn101_logits_per_text = RNmodel(B32image, rn101text)
                     rn101_probs = rn101_logits_per_image.softmax(dim=-1).cpu().numpy()
                 rn101_predicted_index = rn101_probs.argmax()
                 rn101_confidence = rn101_probs[0][rn101_predicted_index]
-                print(f"\nRN101 Confidence: {rn101_confidence} Predicted Index RN101: {rn101_predicted_index}\n")
+                RNdetected_class = rn101textlist[rn101_predicted_index]
+                print(f"\nRN101 Confidence: {rn101_confidence} Predicted Class RN101: {RNdetected_class}\n")
 
                 if rn101_confidence > 0.5 and rn101textlist[rn101_predicted_index] == "a reading glass":
                     print("Accepted by RN101 for Eyeglasses")
                     return "Accepted", None, confidence, detected_class
                 else:
-                    return "Rejected", "RN101 model did not confirm 'reading glass' with sufficient confidence", confidence, detected_class
+                    return "Rejected", f"Error: {detected_class}", confidence, detected_class
             else:
                 return "Rejected", f"Error: {detected_class}", confidence, detected_class
         
@@ -311,44 +322,121 @@ def process_yolo(image):
         print("(311) YOLO Exception")
         return "Rejected", f"{e}", None, None
 
-# Final Result
+    
 def get_result(base64_image):
     final_result = ""
     errstring = ""
     confidence_scores = {}
-    status = 0                                                          # Default status being 0 (Rejected)
+    detected_classes = {}
+    status = 0                                    # Default status being 0 (Rejected)
 
     # Convert base64 to image and save it as image.png
     image, error = base64_to_image(base64_image)
     
+    # Error in Base64
     if error:
-        return 'Rejected', error, confidence_scores, status
+        return {
+            "status": status,
+            "DetectedClass": {
+                "ID_1": 1.0,                        # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
     
     image_path, error = save_image(image, 'image.png')
     
+    # Error in Saving
     if error:
-        return 'Rejected', error, confidence_scores, status
+        return {
+            "status": status,
+            "Detected Class": {
+                "ID_1": 1.0,                        # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
     
-    # Process the saved image
-    Result1, error1 = check_image(image_path)
+    # Processing NSFW
+    NSFW_String, NSFW_Confidence = detect_nsfw(image)
+    if NSFW_String == "Image contains NSFW content":
+        return {
+            "status": status,
+            "DetectedClass": {
+                "ID_1": None,                       # Invalid Image
+                "ID_2": NSFW_Confidence,            # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
     
-    if Result1 == 'Rejected':
-        final_result = "Rejected"
-        errstring += error1
+    # No Face
+    Face_Result, Error_Code = check_image(image_path)
+    if Face_Result == "Rejected":    
+        if Error_Code == 0:
+            return {
+            "status": status,
+            "DetectedClass": {
+                "ID_1": None,                       # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": 1.0,                        # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
+
+        elif Error_Code == 1:
+            return {
+            "status": status,
+            "DetectedClass": {
+                "ID_1": None,                       # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": 1.0,                        # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
+
+        else:
+            return {
+            "status": status,
+            "DetectedClass": {
+                "ID_1": 1.0,                        # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
+
+    
+    # CLIP YOLO    
     else:
         Result2, errormedia = process_single_image(image)
         Result3, errorclip, clip_confidence, detected_class = process_image_clip(image)
         Result4, erroryolo, yolo_confidence, yolo_class = process_yolo(image)
-        errornsfw, nsfw_confidence = detect_nsfw(image)
+        # errornsfw, nsfw_confidence = detect_nsfw(image)
         
         clip_confidence = float(clip_confidence) if clip_confidence is not None else 0.0
         yolo_confidence = float(yolo_confidence) if yolo_confidence is not None else 0.0
-        nsfw_confidence = float(nsfw_confidence) if nsfw_confidence is not None else 0.0
-        
-        # Combined Result
-        print("\n\nCOMBINED RESULT:")
-        print(f"- \n Insight Face Result: {Result1}, \n Media pipe Result: {Result2}, \n Clip B/32 Result: {Result3}, \n yolo Result: {Result4}, \n NSFW Result: {'Rejected' if errornsfw else 'Accepted'}.")
-        print(f"\n Insight Face Error: {error1}, \n Media pipe Error: {errormedia}, \n Clip B/32 Error: {errorclip}, \n yolo error: {erroryolo}, \n NSFW error: {errornsfw}.\n")
+        # nsfw_confidence = float(nsfw_confidence) if nsfw_confidence is not None else 0.0
 
         confidence_scores['CLIP B32'] = {
             "Confidence": clip_confidence,
@@ -359,42 +447,65 @@ def get_result(base64_image):
             "Confidence": yolo_confidence,
             "Detected Class": yolo_class
         }
-        
-        if errornsfw:
-            confidence_scores['NSFW'] = nsfw_confidence
-            errstring += f"NSFW content detected: {errornsfw}. "
-            final_result = "Rejected"
-            status = 0
-            return f"Final Result: {final_result}", errstring, confidence_scores, status
-        
+
+        # # Combined Result
+        # print("\n\nCOMBINED RESULT:")
+        # print(f"- \n Insight Face Result: {Face_Result}, \n Media pipe Result: {Result2}, \n Clip B/32 Result: {Result3}, \n yolo Result: {Result4}, \n NSFW Result: {'Rejected' if errornsfw else 'Accepted'}.")
+        # print(f"\n Insight Face Error: {error1}, \n Media pipe Error: {errormedia}, \n Clip B/32 Error: {errorclip}, \n yolo error: {erroryolo}, \n NSFW error: {errornsfw}.\n")
+
         accepted_count = sum([Result2 == 'Accepted', Result3 == 'Accepted', Result4 == 'Accepted'])
         
         if accepted_count >= 2:
-            final_result = "Accepted"
-            status = 1
+            final_result= {
+            "status": 1,
+            "DetectedClass": {
+                "ID_1": None,                       # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
+
         elif errorclip is None and erroryolo == "sunglasses":
-            final_result = "Accepted"
-            status = 1
-        else:
-            final_result = "Rejected"
-            status = 0
+            final_result= {
+            "status": 1,
+            "DetectedClass": {
+                "ID_1": None,                       # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
             
-            if error1 is not None:
-                errstring += "No Face or multiple faces present or Face clearly not visible or The URL is unreachable. "
-            if errormedia is not None:
-                errstring += "Facial Features clearly not visible. "
-            if errorclip is not None:
-                errstring += "Eyewear or headwear detected. "
-            if erroryolo is not None:
-                errstring += "Eyewear or headwear detected. "
+        else:
+            final_result= {
+            "status": 0,
+            "DetectedClass": {
+                "ID_1": None,                       # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": 1.0,                       # Eye
+                "ID_6": 1.0,                       # Cap
+            },
+            "confidence_scores": confidence_scores
+        }
     
+    # Combined Result
+    print("\n\nCOMBINED RESULT:")
+    print(f"- \n Insight Face Result: {Face_Result}, \n Media pipe Result: {Result2}, \n Clip B/32 Result: {Result3}, \n yolo Result: {Result4}, \n")
+    # print(f"\n Insight Face Error: {error1}, \n Media pipe Error: {errormedia}, \n Clip B/32 Error: {errorclip}, \n yolo error: {erroryolo}, \n NSFW error: {errornsfw}.\n")
+
     # Clean up temporary folders
     for folder in ['TempFaces']:
         if os.path.exists(folder):
             shutil.rmtree(folder)
     
     # Returning Final Result
-    if final_result == "Accepted":
-        return f"Final Result: {final_result}", None, None, status
-    else:
-        return f"Final Result: {final_result}", errstring, confidence_scores, status
+    return final_result

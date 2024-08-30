@@ -18,8 +18,8 @@ import gradio as gr
 from io import BytesIO
 from transformers import AutoModelForImageClassification, ViTImageProcessor
 
-BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/Version6/Images"
-YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/Version6/best.pt"
+BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version6/Images"
+YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version6/best.pt"
 
 
 
@@ -365,4 +365,4 @@ if __name__=="__main__":
                 aadhar_out = gr.Textbox(value="", label="Output")
         facebtn.click(display_image_from_url, inputs=faceimg, outputs=face_out)
         aadharbtn.click(get_result, inputs=faceimg, outputs=aadhar_out)
-    demo.launch(share=True, server_port=7861)
+    demo.launch(share=False, server_port=7860)
