@@ -18,8 +18,8 @@ from PIL import Image
 from io import BytesIO
 from transformers import AutoModelForImageClassification, ViTImageProcessor
 
-BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/Version7/Images"
-YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/Version7/best.pt"
+BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version7/Images"
+YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version7/best.pt"
 
 try:
     app = FaceAnalysis(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
