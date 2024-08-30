@@ -14,12 +14,11 @@ import clip
 from ultralytics import YOLO
 import requests
 from PIL import Image
-# import gradio as gr
 from io import BytesIO
 from transformers import AutoModelForImageClassification, ViTImageProcessor
 
-BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/Version8/Images"
-YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/Version8/best.pt"
+BASE_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version8/API/Images"
+YOLO_FOLDER = "/home/abp/Documents/ABPProduction/ABP/ProfileModeration/Version8/best.pt"
 
 try:
     app = FaceAnalysis(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
@@ -298,6 +297,15 @@ def detect_image_class(image_path):
         return "Rejected", mapping[a]
     except Exception as e:
         return "Rejected", f"{e}"
+    
+# CleanUp
+def cleanup_folders(folders):
+    for folder in folders:
+        if os.path.exists(folder):
+            print(f"Deleting folder: {folder}")  # Debugging statement
+            shutil.rmtree(folder)
+        else:
+            print(f"Folder {folder} does not exist.")  # Debugging statement
 
 def get_result(image_url):
     final_result = ""
@@ -343,13 +351,9 @@ def get_result(image_url):
                 errstring += " - Eyewear or headwear present"
 
     # Delete the folders Images and TempFaces
-    for folder in ['Images', 'TempFaces']:
-        if os.path.exists(folder):
-            shutil.rmtree(folder)
-    return f"Final Result: {final_result}",errstring 
+    # for folder in ['Images', 'TempFaces']:
+        # if os.path.exists(folder):
+            # shutil.rmtree(folder)
+    cleanup_folders(['Images', 'TempFaces'])
 
-# Function to download and display the image
-def display_image_from_url(url):
-    response = requests.get(url)
-    img = Image.open(BytesIO(response.content))
-    return img
+    return f"Final Result: {final_result}",errstring 
