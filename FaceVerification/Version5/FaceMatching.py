@@ -38,6 +38,6 @@ def compareFace2Aadhar(faceurl,aadharurl):
         return None
     
 if __name__== "__main__":
-    face_url = "https://im.indiatimes.in/content/2022/Dec/5-copy-28_63a563c0bfd9c.jpg?w=720&h=1280&cc=1&webp=1&q=75"
-    aadhar_url = "https://img.olympics.com/images/image/private/t_16-9_760/f_auto/primary/s0d4s8tbffuvrcmqbhrz"
-    print(compareFace2Aadhar(face_url,aadhar_url))
+    face1_url = "https://im.indiatimes.in/content/2022/Dec/5-copy-28_63a563c0bfd9c.jpg?w=720&h=1280&cc=1&webp=1&q=75"
+    face2_url = "https://img.olympics.com/images/image/private/t_16-9_760/f_auto/primary/s0d4s8tbffuvrcmqbhrz"
+    print(compareFace2Aadhar(face1_url,face2_url))

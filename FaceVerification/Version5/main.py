@@ -14,7 +14,7 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Define paths and load model for classification
-model_path = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version5/resnet_model20.pth'
+model_path = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version5/resnet18_model20_frozen.pth'
 data_dir = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version3/Dataset'
 
 # Set device
@@ -37,8 +37,8 @@ model.eval()
 # Define transformation for inference
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    transforms.ToTensor()
+    # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
 # Define face matching functions
@@ -69,8 +69,8 @@ def compareFaceToDocument(face_url, document_url):
     DocumentEmbed = getFace(document_url)
     if faceEmbed is not None and DocumentEmbed is not None:
         similarity = cosine_similarity([faceEmbed], [DocumentEmbed])
-        percnt = (math.pi - math.acos(similarity)) * 100 / math.pi
-        return percnt
+        # percnt = (math.pi - math.acos(similarity)) * 100 / math.pi
+        return similarity
     else:
         print("Mismatch in face embeddings")
         return None
@@ -115,14 +115,19 @@ def process_images(face_url, document_url):
         # Perform face match
         similarity_percentage = compareFaceToDocument(face_url, document_url)
         if similarity_percentage is not None:
-            print(f'Face similarity percentage: {similarity_percentage:.2f}%')
+            print(f'Face similarity percentage: {similarity_percentage}')
+            return f'Face similarity percentage: {similarity_percentage}'
         else:
             print('Face comparison failed.')
+            return 'Face comparison failed.'
     else:
         print('Low Confidence Score. Rejected.')
+        return "Low Confidence Score. Rejected."
 
+'''
 # Example usage
 if __name__ == "__main__":
     face_url = "https://im.indiatimes.in/content/2022/Dec/5-copy-28_63a563c0bfd9c.jpg?w=720&h=1280&cc=1&webp=1&q=75"
     document_url = "https://img.olympics.com/images/image/private/t_16-9_760/f_auto/primary/s0d4s8tbffuvrcmqbhrz"
     process_images(face_url, document_url)
+    '''
