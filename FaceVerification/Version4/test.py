@@ -9,8 +9,8 @@ from pathlib import Path
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Define paths
-model_path = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version3/resnet_model1.pth'
-data_dir = 'Dataset'
+model_path = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version4/resnet18_model20_frozen.pth'
+data_dir = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version3/Dataset'
 
 # Load class names
 train_dataset = datasets.ImageFolder(root=data_dir)
@@ -29,8 +29,8 @@ model.eval()
 # Define transformation for inference
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    transforms.ToTensor()
+    # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
 def fhook(module,input,output):
@@ -53,7 +53,7 @@ def predict(image_path):
 
 # Example usage
 if __name__ == "__main__":
-    model.avgpool.register_forward_hook(fhook)
+    # model.avgpool.register_forward_hook(fhook)
     # for a,b in model.named_modules():
     #     print(a)
     import sys
