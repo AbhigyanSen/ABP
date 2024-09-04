@@ -13,7 +13,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # Define paths and hyperparameters
 data_dir = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version3/Dataset'
 batch_size = 16
-num_epochs = 50
+num_epochs = 100
 learning_rate = 0.001
 
 # Data augmentation and normalization
@@ -86,5 +86,5 @@ for epoch in range(num_epochs):
 print('Training completed')
 
 # Save the model
-torch.save(model.state_dict(), 'resnet18_model50_frozen.pth')
+torch.save(model.state_dict(), 'resnet18_model100_frozen.pth')
 print('Model saved to resnet_model.pth')
