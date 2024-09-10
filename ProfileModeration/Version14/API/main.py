@@ -14,6 +14,10 @@ import face_recognition
 from insightface.app import FaceAnalysis
 import numpy as np
 
+# Warnings Ignore
+import warnings
+warnings.filterwarnings("ignore")
+
 
 BASE_FOLDER = "Demo" 
 YOLO_FOLDER = "best.pt"
@@ -57,7 +61,7 @@ mapping = {0 : "sunglasses", 1 : "sunglasses", 2 : "eyeglasses", 3 : "headware",
 
 # Coversion to Image
 def base64_to_image(base64_str):
-    print(f"BASE64: \n{base64_str}")
+    # print(f"BASE64: \n{base64_str}")
     print("\n\n")
     try:
         # Decode Base64 string
