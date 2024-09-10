@@ -18,7 +18,6 @@ import numpy as np
 import warnings
 warnings.filterwarnings("ignore")
 
-
 BASE_FOLDER = "Demo" 
 YOLO_FOLDER = "best.pt"
 
@@ -31,7 +30,7 @@ try:
     app = FaceAnalysis(providers=['CUDAExecutionProvider', 'CPUExecutionProvider'])
     app.prepare(ctx_id=-1)
 except Exception as e:
-    print(f"(30) Error Loading InsightFace Model: {e}")
+    print(f"(33) Error Loading InsightFace Model: {e}")
     app = None
 
 # MEDIAPIPE
@@ -62,7 +61,7 @@ mapping = {0 : "sunglasses", 1 : "sunglasses", 2 : "eyeglasses", 3 : "headware",
 # Coversion to Image
 def base64_to_image(base64_str):
     # print(f"BASE64: \n{base64_str}")
-    print("\n\n")
+
     try:
         # Decode Base64 string
         image_data = base64.b64decode(base64_str)
@@ -85,16 +84,16 @@ def base64_to_image(base64_str):
                             image = image.rotate(90, expand=True)
                         break
         except Exception as exif_error:
-            print(f"EXIF correction failed: {exif_error}")
+            print(f"(87) EXIF correction failed: {exif_error}")
         
         # Convert image to RGB and then to NumPy array
         image = image.convert("RGB")
         image = np.array(image)
         
-        print("(64) Base64 Try")
+        print("(93) Base64 Try")
         return image, None
     except Exception as e:
-        print("(67) Base64 Except")
+        print("(96) Base64 Except")
         return None, str(e)
     
 
@@ -103,16 +102,16 @@ def save_image(image, image_name):
     try:
         image_path = os.path.join(BASE_FOLDER, image_name)
         Image.fromarray(image).save(image_path)
-        print("(76) Image Saving Successfull")
+        print("(105) Image Saving Successfull")
         return image_path, None
     except Exception as e:
-        print("(79) Image Saving Failed")
+        print("(108) Image Saving Failed")
         return None, str(e)
 
 # NSFW
 def detect_nsfw(image):
     try:
-        print("(85) NSFW Try")
+        print("(114) NSFW Try")
         img = cv2.cvtColor(np.array(image), cv2.COLOR_RGB2BGR)
         model = AutoModelForImageClassification.from_pretrained("Falconsai/nsfw_image_detection")
         processor = ViTImageProcessor.from_pretrained('Falconsai/nsfw_image_detection')
@@ -131,7 +130,7 @@ def detect_nsfw(image):
         else:
             return None, confidence
     except Exception as e:
-        print("(104) NSFW Except")
+        print("(133) NSFW Except")
         return str(e), None
 
 # Cropping the Face from the Image (If Face Exists {Face Recognition})
@@ -139,7 +138,7 @@ def crop_faces(image, output_dir, expansion_factor=0.3):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     try:
-        print("(112) Face Recognition Try")
+        print("(141) Face Recognition Try")
         image = np.array(image)
         face_locations = face_recognition.face_locations(image)
         
@@ -162,7 +161,7 @@ def crop_faces(image, output_dir, expansion_factor=0.3):
         face_image.save(face_path)
         return True, None
     except Exception as e:
-        print("(135) Face Recognition Exception")
+        print("(164) Face Recognition Exception")
         return False, str(e)
 
 # Saving the Largest Face (Multiple Faces)
@@ -170,7 +169,7 @@ def save_face(largestface, image, output_dir, expansion_factor=0.3):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     try:
-        print("(143) Largest Face Try")
+        print("(172) Largest Face Try")
         image = np.array(image)
         pil_image = Image.fromarray(image)
         base_name = 'face.png'
@@ -188,31 +187,27 @@ def save_face(largestface, image, output_dir, expansion_factor=0.3):
         face_image.save(face_path)
         return True, None
     except Exception as e:
-        print("(161) Largest Face Except")
+        print("(190) Largest Face Except")
         return False, str(e)
 
 # Insight Face Processing
 def check_image(image_path):
     try:
-        print("(167) Insight Face Processing Try")
+        print("(196) Insight Face Processing Try")
         img = cv2.imread(image_path)
-        print(image_path)
+        # print(image_path)
         faces = app.get(img)
         
         if len(faces) == 1:
             success, error = crop_faces(Image.open(image_path), 'TempFaces')
             if success:
-                print("175")
                 return 'Accepted', None
             else:
                 if error == "No Face Detected":
-                    print("179")
                     return "Rejected", 0
                 elif error == "Multiple faces detected":
-                    print("182")
                     return 'Rejected', 1
                 else:
-                    print("185")
                     return "Rejected", 2        #Face cropping failed'
                 
         elif len(faces) > 1:
@@ -245,13 +240,13 @@ def check_image(image_path):
             return 'Rejected', 0
             # return 'Rejected', error_msg
     except Exception as e:
-        print("(204) Insight Face Processing Exception")
+        print("(243) Insight Face Processing Exception")
         return 'Rejected', 2
         # return 'Rejected', str(e)
 
 # MediaPipe Processing
 def detect_landmarks(image):
-    print("(209) Mediapipe Processing")
+    print("(249) Mediapipe Processing")
     results = mp_face_mesh.process(cv2.cvtColor(np.array(image), cv2.COLOR_BGR2RGB))
     if not results.multi_face_landmarks:
         return None
@@ -260,7 +255,7 @@ def detect_landmarks(image):
 # Mediapipe Face Processing
 def process_single_image(image):
     try:
-        print("(218) Mediapipe Single Image Processing")
+        print("(258) Mediapipe Single Image Processing")
         image_top = image[:image.shape[0] // 2, :]
         image_bottom = image[image.shape[0] // 2:, :]
         landmarks_top = detect_landmarks(image_top)
@@ -278,7 +273,7 @@ def process_single_image(image):
             
         return Result2, error_message
     except Exception as e:
-        print("(236) Mediapipe Single Image Exception")
+        print("(276) Mediapipe Single Image Exception")
         return 'Rejected', str(e)
 
 
@@ -300,7 +295,7 @@ def process_image_clip(image):
         
         if confidence > 0.5 and (detected_class == "a sunglass" or detected_class == "a reading glass"):            
             if detected_class in ["a sunglass", "a reading glass"]:
-                print("(258) CLIP RN101 Processing Try")
+                print("(298) CLIP RN101 Processing Try")
 
                 with torch.no_grad():
                     rn101_logits_per_image, rn101_logits_per_text = RNmodel(B32image, rn101text)
@@ -325,13 +320,13 @@ def process_image_clip(image):
             return "Accepted", None, confidence, detected_class
         
     except Exception as e:
-        print("(282) CLIP Processing Exception")
+        print("(323) CLIP Processing Exception")
         return 'Rejected', str(e), 0, None
 
 # YOLO Processing
 def process_yolo(image):
     try:
-        print("(288) YOLO Processing Try")
+        print("(329) YOLO Processing Try")
         image = Image.fromarray(image)
         results = yolo_model(image)
         
@@ -349,12 +344,12 @@ def process_yolo(image):
         print(f"YOLO Class: {detected_class} and Confidence: {conf}")
         
         if a == 2:                                          # Eyeglasses
-            print("(306) YOLO Eyeglass Acceptance")
+            print("(347) YOLO Eyeglass Acceptance")
             return "Accepted", None, conf, detected_class
         return "Rejected", detected_class, conf, detected_class
     
     except Exception as e:
-        print("(311) YOLO Exception")
+        print("(352) YOLO Exception")
         return "Rejected", f"{e}", None, None
 
     
