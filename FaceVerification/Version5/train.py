@@ -77,3 +77,11 @@ print('Training completed')
 # Save the model
 torch.save(model.state_dict(), 'resnet18_model100.pth')
 print('Model saved to resnet_model.pth')
+
+
+
+'''
+OPTIMAL SIZE FOR PICTURE
+ANIMALS
+CARTOONS
+'''

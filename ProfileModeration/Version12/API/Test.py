@@ -166,18 +166,23 @@ def check_image(image_path):
     try:
         print("(167) Insight Face Processing Try")
         img = cv2.imread(image_path)
+        print(image_path)
         faces = app.get(img)
         
         if len(faces) == 1:
             success, error = crop_faces(Image.open(image_path), 'TempFaces')
             if success:
+                print("175")
                 return 'Accepted', None
             else:
                 if error == "No Face Detected":
+                    print("179")
                     return "Rejected", 0
                 elif error == "Multiple faces detected":
+                    print("182")
                     return 'Rejected', 1
                 else:
+                    print("185")
                     return "Rejected", 2        #Face cropping failed'
                 
         elif len(faces) > 1:

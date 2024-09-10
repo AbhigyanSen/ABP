@@ -14,15 +14,16 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Define paths and load model for classification
-model_path = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version5/resnet18_model20_frozen.pth'
-data_dir = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version3/Dataset'
+model_path = 'resnet18_model50_frozen.pth'
+# data_dir = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version3/Dataset'
 
 # Set device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load class names
-train_dataset = datasets.ImageFolder(root=data_dir)
-class_names = train_dataset.classes
+# train_dataset = datasets.ImageFolder(root=data_dir)
+# class_names = train_dataset.classes
+class_names = ['AadharFront', 'DrivingFront', 'PanFront', 'VoterFront']
 
 # Initialize the model
 model = models.resnet18(pretrained=False)  # Initialize model without pre-trained weights
@@ -124,10 +125,9 @@ def process_images(face_url, document_url):
         print('Low Confidence Score. Rejected.')
         return "Low Confidence Score. Rejected."
 
-'''
+
 # Example usage
 if __name__ == "__main__":
-    face_url = "https://im.indiatimes.in/content/2022/Dec/5-copy-28_63a563c0bfd9c.jpg?w=720&h=1280&cc=1&webp=1&q=75"
-    document_url = "https://img.olympics.com/images/image/private/t_16-9_760/f_auto/primary/s0d4s8tbffuvrcmqbhrz"
+    face_url = "https://cdn.abpweddings.com/documents/233a8247f88b7baa80ceeccc376c9cc2/1720013554470.webp?width=150"
+    document_url = "https://cdn.abpweddings.com/documents/233a8247f88b7baa80ceeccc376c9cc2/1715496020276.jpg"
     process_images(face_url, document_url)
-    '''

@@ -9,12 +9,13 @@ from pathlib import Path
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Define paths
-model_path = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version5/resnet_model20.pth'
-data_dir = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version3/Dataset'
+model_path = 'resnet18_model50_frozen.pth'
+# data_dir = '/home/abp/Documents/ABPProduction/ABP/FaceVerification/Version3/Dataset'
 
 # Load class names
-train_dataset = datasets.ImageFolder(root=data_dir)
-class_names = train_dataset.classes
+# train_dataset = datasets.ImageFolder(root=data_dir)
+# class_names = train_dataset.classes
+class_names = ['AadharFront', 'DrivingFront', 'PanFront', 'VoterFront']
 
 # Initialize the model
 model = models.resnet18(pretrained=False)  # Initialize model without pre-trained weights
@@ -29,8 +30,8 @@ model.eval()
 # Define transformation for inference
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+    transforms.ToTensor()
+    # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
 def fhook(module,input,output):
@@ -63,5 +64,5 @@ if __name__ == "__main__":
 
     image_path = sys.argv[1]
     class_name, confidence_score = predict(image_path)
-    print(f'The document is of type: {class_name}')
+    print(f'\nDocument Type: {class_name}')
     print(f'Confidence score: {confidence_score:.4f}')
