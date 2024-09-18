@@ -72,8 +72,8 @@ mapping = {0 : "sunglasses", 1 : "sunglasses", 2 : "eyeglasses", 3 : "headware",
 def base64_to_image(base64_str):
     start_time = time.time()  # Start time measurement
     
-    print(f"BASE64: \n\n{base64_str}")
-    print("\n\n")
+    # print(f"BASE64: \n\n{base64_str}")
+    # print("\n\n")
 
     try:
         # Decode Base64 string
@@ -302,6 +302,7 @@ def check_image(image_path):
         elapsed_time = end_time - start_time
         print(f"(check_image) Time taken: {elapsed_time:.4f} seconds")
         
+# ANIMATED IMAGE
 def check_if_cartoon(image_path):
     start_time = time.time()
     try:

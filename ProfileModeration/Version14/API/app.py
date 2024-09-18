@@ -26,6 +26,3 @@ def process_image():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001, host='0.0.0.0')
-
-
-# nohup gunicorn -w 2 -b 0.0.0.0:5001 app:app > gunicorn.log 2>&1 &
