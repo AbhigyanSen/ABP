@@ -1,0 +1,219 @@
+Request 1 failed:
+Error: Expecting value: line 1 column 1 (char 0)
+
+Request 2:
+Time taken: 59.0634 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": 1.0,
+    "ID_6": 1.0
+  },
+  "confidence_scores": {
+    "CLIP B32": {
+      "Confidence": 0.3729313910007477,
+      "Detected Class": "a mask"
+    },
+    "YOLO": {
+      "Confidence": 0.8240569233894348,
+      "Detected Class": "headware"
+    }
+  },
+  "status": 0
+}
+
+Request 3:
+Time taken: 7.0016 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": 1.0,
+    "ID_6": 1.0
+  },
+  "confidence_scores": {
+    "CLIP B32": {
+      "Confidence": 0.3729313910007477,
+      "Detected Class": "a mask"
+    },
+    "YOLO": {
+      "Confidence": 0.8240569233894348,
+      "Detected Class": "headware"
+    }
+  },
+  "status": 0
+}
+
+Request 4:
+Time taken: 6.8156 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": 1.0,
+    "ID_6": 1.0
+  },
+  "confidence_scores": {
+    "CLIP B32": {
+      "Confidence": 0.3729313910007477,
+      "Detected Class": "a mask"
+    },
+    "YOLO": {
+      "Confidence": 0.8240569233894348,
+      "Detected Class": "headware"
+    }
+  },
+  "status": 0
+}
+
+Request 5:
+Time taken: 6.8011 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": 1.0,
+    "ID_6": 1.0
+  },
+  "confidence_scores": {
+    "CLIP B32": {
+      "Confidence": 0.3729313910007477,
+      "Detected Class": "a mask"
+    },
+    "YOLO": {
+      "Confidence": 0.8240569233894348,
+      "Detected Class": "headware"
+    }
+  },
+  "status": 0
+}
+
+Request 6:
+Time taken: 6.8565 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": 1.0,
+    "ID_6": 1.0
+  },
+  "confidence_scores": {
+    "CLIP B32": {
+      "Confidence": 0.3729313910007477,
+      "Detected Class": "a mask"
+    },
+    "YOLO": {
+      "Confidence": 0.8240569233894348,
+      "Detected Class": "headware"
+    }
+  },
+  "status": 0
+}
+
+Request 7:
+Time taken: 6.6406 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": 1.0,
+    "ID_6": 1.0
+  },
+  "confidence_scores": {
+    "CLIP B32": {
+      "Confidence": 0.3729313910007477,
+      "Detected Class": "a mask"
+    },
+    "YOLO": {
+      "Confidence": 0.8240569233894348,
+      "Detected Class": "headware"
+    }
+  },
+  "status": 0
+}
+
+Request 8:
+Time taken: 6.7346 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": 1.0,
+    "ID_6": 1.0
+  },
+  "confidence_scores": {
+    "CLIP B32": {
+      "Confidence": 0.3729313910007477,
+      "Detected Class": "a mask"
+    },
+    "YOLO": {
+      "Confidence": 0.8240569233894348,
+      "Detected Class": "headware"
+    }
+  },
+  "status": 0
+}
+
+Request 9:
+Time taken: 6.8014 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": 1.0,
+    "ID_6": 1.0
+  },
+  "confidence_scores": {
+    "CLIP B32": {
+      "Confidence": 0.3729313910007477,
+      "Detected Class": "a mask"
+    },
+    "YOLO": {
+      "Confidence": 0.8240569233894348,
+      "Detected Class": "headware"
+    }
+  },
+  "status": 0
+}
+
+Request 10:
+Time taken: 6.1287 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": 1.0,
+    "ID_6": 1.0
+  },
+  "confidence_scores": {
+    "CLIP B32": {
+      "Confidence": 0.3729313910007477,
+      "Detected Class": "a mask"
+    },
+    "YOLO": {
+      "Confidence": 0.8240569233894348,
+      "Detected Class": "headware"
+    }
+  },
+  "status": 0
+}
+

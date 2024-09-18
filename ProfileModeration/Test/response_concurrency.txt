@@ -1,0 +1,160 @@
+Request 2:
+Start time: 1726655943.5041 seconds
+Time taken: 3.6809 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": null,
+    "ID_6": null
+  },
+  "confidence_scores": {},
+  "status": 1
+}
+
+Request 3:
+Start time: 1726655943.5045 seconds
+Time taken: 3.7929 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": null,
+    "ID_6": null
+  },
+  "confidence_scores": {},
+  "status": 1
+}
+
+Request 9:
+Start time: 1726655943.5149 seconds
+Time taken: 4.3992 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": null,
+    "ID_6": null
+  },
+  "confidence_scores": {},
+  "status": 1
+}
+
+Request 7:
+Start time: 1726655943.5122 seconds
+Time taken: 5.6544 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": null,
+    "ID_6": null
+  },
+  "confidence_scores": {},
+  "status": 1
+}
+
+Request 6:
+Start time: 1726655943.5107 seconds
+Time taken: 5.7555 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": null,
+    "ID_6": null
+  },
+  "confidence_scores": {},
+  "status": 1
+}
+
+Request 10:
+Start time: 1726655943.5169 seconds
+Time taken: 5.8526 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": null,
+    "ID_6": null
+  },
+  "confidence_scores": {},
+  "status": 1
+}
+
+Request 4:
+Start time: 1726655943.5082 seconds
+Time taken: 10.1760 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": null,
+    "ID_6": null
+  },
+  "confidence_scores": {},
+  "status": 1
+}
+
+Request 8:
+Start time: 1726655943.5126 seconds
+Time taken: 10.2719 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": null,
+    "ID_6": null
+  },
+  "confidence_scores": {},
+  "status": 1
+}
+
+Request 5:
+Start time: 1726655943.5095 seconds
+Time taken: 10.3748 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": null,
+    "ID_6": null
+  },
+  "confidence_scores": {},
+  "status": 1
+}
+
+Request 1:
+Start time: 1726655943.5037 seconds
+Time taken: 10.4798 seconds
+Response: {
+  "DetectedClass": {
+    "ID_1": null,
+    "ID_2": null,
+    "ID_3": null,
+    "ID_4": null,
+    "ID_5": null,
+    "ID_6": null
+  },
+  "confidence_scores": {},
+  "status": 1
+}
+
