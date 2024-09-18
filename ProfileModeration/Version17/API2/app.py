@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from main2 import get_result
+from main import get_result
 
 app = Flask(__name__)
 @app.route('/process_image', methods=['POST'])

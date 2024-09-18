@@ -209,16 +209,12 @@ def crop_faces(image, output_dir, expansion_factor=0.3):
         elapsed_time = end_time - start_time
         print(f"(crop_faces) Time taken: {elapsed_time:.4f} seconds")
 
-# Make Dynamic TempFaces
-def create_dynamic_folder(base_folder="DynamicFaces"):
-    folder_name = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")  # Use timestamp
-    dynamic_folder_path = os.path.join(base_folder, folder_name)
-    os.makedirs(dynamic_folder_path, exist_ok=True)  # Create folder if it doesn't exist
-    return dynamic_folder_path
-
 # Saving the Largest Face (Multiple Faces)
 def save_face(largestface, image, output_dir, expansion_factor=0.3):
     start_time = time.time()  # Start time measurement
+    
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     
     try:
         print("(172) Largest Face Try")
@@ -247,16 +243,23 @@ def save_face(largestface, image, output_dir, expansion_factor=0.3):
         print(f"(save_face) Time taken: {elapsed_time:.4f} seconds")
 
 # Insight Face Processing
-def check_image(image_path, dynamic_folder_path):
+def check_image(image_path):
     start_time = time.time()  # Start time measurement
+    
+    # Create a dynamic output directory based on the current time
+    current_time = datetime.now().strftime("%H%M%S")
+    output_dir = f'Temp{current_time}'
     
     try:
         print("(196) Insight Face Processing Try")
         img = cv2.imread(image_path)
         faces = app.get(img)  # Assuming 'app' is a pre-initialized face detection model
         
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
         if len(faces) == 1:
-            success, error = crop_faces(Image.open(image_path), dynamic_folder_path)  # Pass dynamic folder here
+            success, error = crop_faces(Image.open(image_path), output_dir)
             if success:
                 return 'Accepted', None
             else:
@@ -285,7 +288,7 @@ def check_image(image_path, dynamic_folder_path):
             area_difference = (areas[0] - areas[1]) / areas[0]
             if area_difference > 0.80:
                 largestface = faces[largestfaceindex]
-                success, error = save_face(largestface, Image.open(image_path), dynamic_folder_path)
+                success, error = save_face(largestface, Image.open(image_path), output_dir)
                 if success:
                     return 'Accepted', None
                 else:
@@ -473,7 +476,7 @@ def get_result(base64_image):
     errstring = ""
     confidence_scores = {}
     detected_classes = {}
-    status = 0  # Default status being 0 (Rejected)
+    status = 0                                    # Default status being 0 (Rejected)
 
     # Convert base64 to image and save it as image.jpg
     image, error = base64_to_image(base64_image)
@@ -483,35 +486,33 @@ def get_result(base64_image):
         return {
             "status": status,
             "DetectedClass": {
-                "ID_1": 1.0,  # Invalid Image
-                "ID_2": None,  # NSFW
-                "ID_3": None,  # No Face
-                "ID_4": None,  # Multiple Faces                       
-                "ID_5": None,  # Eye
-                "ID_6": None,  # Cap
+                "ID_1": 1.0,                        # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
             },
-            "confidence_scores": {}
+            "confidence_scores":{}
         }
     
-    # Create a dynamic folder for storing faces
-    dynamic_folder_path = create_dynamic_folder()
+    # image_path, error = save_image(image, 'image.jpg')
+    image_path, error = save_image(image, None) 
 
-    # Save the image
-    image_path, error = save_image(image, None)
-
+    
     # Error in Saving
     if error:
         return {
             "status": status,
-            "DetectedClass": {
-                "ID_1": 1.0,  # Invalid Image
-                "ID_2": None,  # NSFW
-                "ID_3": None,  # No Face
-                "ID_4": None,  # Multiple Faces                       
-                "ID_5": None,  # Eye
-                "ID_6": None,  # Cap
+            "Detected Class": {
+                "ID_1": 1.0,                        # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
             },
-            "confidence_scores": {}
+            "confidence_scores":{}
         }
     
     # Processing NSFW
@@ -520,145 +521,149 @@ def get_result(base64_image):
         return {
             "status": status,
             "DetectedClass": {
-                "ID_1": None,  # Invalid Image
-                "ID_2": NSFW_Confidence,  # NSFW
-                "ID_3": None,  # No Face
-                "ID_4": None,  # Multiple Faces                       
-                "ID_5": None,  # Eye
-                "ID_6": None,  # Cap
+                "ID_1": None,                       # Invalid Image
+                "ID_2": NSFW_Confidence,            # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
             },
-            "confidence_scores": {}
+            "confidence_scores":{}
         }
     
     # No Face
-    Face_Result, Error_Code = check_image(image_path, dynamic_folder_path)
-    
-    if Face_Result == "Rejected":
+    Face_Result, Error_Code = check_image(image_path)
+    if Face_Result == "Rejected":    
         if Error_Code == 0:
             return {
-                "status": status,
-                "DetectedClass": {
-                    "ID_1": None,  # Invalid Image
-                    "ID_2": None,  # NSFW
-                    "ID_3": 1.0,   # No Face
-                    "ID_4": None,  # Multiple Faces                       
-                    "ID_5": None,  # Eye
-                    "ID_6": None,  # Cap
-                },
-                "confidence_scores": {}
-            }
+            "status": status,
+            "DetectedClass": {
+                "ID_1": None,                       # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": 1.0,                        # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
+
         elif Error_Code == 1:
             return {
-                "status": status,
-                "DetectedClass": {
-                    "ID_1": None,  # Invalid Image
-                    "ID_2": None,  # NSFW
-                    "ID_3": None,  # No Face
-                    "ID_4": 1.0,   # Multiple Faces                       
-                    "ID_5": None,  # Eye
-                    "ID_6": None,  # Cap
-                },
-                "confidence_scores": {}
-            }
+            "status": status,
+            "DetectedClass": {
+                "ID_1": None,                       # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": 1.0,                        # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
+
         else:
             return {
-                "status": status,
-                "DetectedClass": {
-                    "ID_1": 1.0,  # Invalid Image
-                    "ID_2": None,  # NSFW
-                    "ID_3": None,  # No Face
-                    "ID_4": None,  # Multiple Faces                       
-                    "ID_5": None,  # Eye
-                    "ID_6": None,  # Cap
-                },
-                "confidence_scores": {}
-            }
+            "status": status,
+            "DetectedClass": {
+                "ID_1": 1.0,                        # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
+
     
     # ANIMATED IMAGES
     Cartoon_Face_Result, Error_Code = check_if_cartoon(image_path)
-    if Error_Code is not None:  # Exception in Animated
+    if Error_Code != None:                          # Exception in Animated
         return {
             "status": 0,
             "DetectedClass": {
-                "ID_1": None,  # Invalid Image
-                "ID_2": None,  # NSFW
-                "ID_3": 1.0,   # No Face
-                "ID_4": None,  # Multiple Faces                       
-                "ID_5": None,  # Eye
-                "ID_6": None,  # Cap
-            }
-        }
-    
+                "ID_1": None,                       # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": 1.0,                        # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            }}
+        
     if Cartoon_Face_Result == "Cartoon":
         return {
             "status": 0,
             "DetectedClass": {
-                "ID_1": None,  # Invalid Image
-                "ID_2": None,  # NSFW
-                "ID_3": 1.0,   # No Face
-                "ID_4": None,  # Multiple Faces                       
-                "ID_5": None,  # Eye
-                "ID_6": None,  # Cap
-            }
-        }
+                "ID_1": None,                       # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": 1.0,                        # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            }}
     
     # CLIP YOLO    
-    Result2, errormedia = process_single_image(image)
-    Result3, errorclip, clip_confidence, detected_class = process_image_clip(image)
-    Result4, erroryolo, yolo_confidence, yolo_class = process_yolo(image)
-
-    clip_confidence = float(clip_confidence) if clip_confidence is not None else 0.0
-    yolo_confidence = float(yolo_confidence) if yolo_confidence is not None else 0.0
-
-    confidence_scores['CLIP B32'] = {
-        "Confidence": clip_confidence,
-        "Detected Class": detected_class
-    }
-    
-    confidence_scores['YOLO'] = {
-        "Confidence": yolo_confidence,
-        "Detected Class": yolo_class
-    }
-
-    accepted_count = sum([Result2 == 'Accepted', Result3 == 'Accepted', Result4 == 'Accepted'])
-    
-    if accepted_count >= 2:
-        final_result = {
-            "status": 1,
-            "DetectedClass": {
-                "ID_1": None,  # Invalid Image
-                "ID_2": None,  # NSFW
-                "ID_3": None,  # No Face
-                "ID_4": None,  # Multiple Faces                       
-                "ID_5": None,  # Eye
-                "ID_6": None,  # Cap
-            },
-            "confidence_scores": {}
-        }
-
-    elif errorclip is None and erroryolo == "sunglasses":
-        final_result = {
-            "status": 1,
-            "DetectedClass": {
-                "ID_1": None,  # Invalid Image
-                "ID_2": None,  # NSFW
-                "ID_3": None,  # No Face
-                "ID_4": None,  # Multiple Faces                       
-                "ID_5": None,  # Eye
-                "ID_6": None,  # Cap
-            },
-            "confidence_scores": {}
-        }
     else:
-        final_result = {
+        Result2, errormedia = process_single_image(image)
+        Result3, errorclip, clip_confidence, detected_class = process_image_clip(image)
+        Result4, erroryolo, yolo_confidence, yolo_class = process_yolo(image)
+        # errornsfw, nsfw_confidence = detect_nsfw(image)
+        
+        clip_confidence = float(clip_confidence) if clip_confidence is not None else 0.0
+        yolo_confidence = float(yolo_confidence) if yolo_confidence is not None else 0.0
+        # nsfw_confidence = float(nsfw_confidence) if nsfw_confidence is not None else 0.0
+
+        confidence_scores['CLIP B32'] = {
+            "Confidence": clip_confidence,
+            "Detected Class": detected_class
+        }
+        
+        confidence_scores['YOLO'] = {
+            "Confidence": yolo_confidence,
+            "Detected Class": yolo_class
+        }
+
+        accepted_count = sum([Result2 == 'Accepted', Result3 == 'Accepted', Result4 == 'Accepted'])
+        
+        if accepted_count >= 2:
+            final_result= {
+            "status": 1,
+            "DetectedClass": {
+                "ID_1": None,                       # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
+
+        elif errorclip is None and erroryolo == "sunglasses":
+            final_result= {
+            "status": 1,
+            "DetectedClass": {
+                "ID_1": None,                       # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": None,                       # Eye
+                "ID_6": None,                       # Cap
+            },
+            "confidence_scores":{}
+        }
+            
+        else:
+            final_result= {
             "status": 0,
             "DetectedClass": {
-                "ID_1": None,  # Invalid Image
-                "ID_2": None,  # NSFW
-                "ID_3": None,  # No Face
-                "ID_4": None,  # Multiple Faces                       
-                "ID_5": 1.0,   # Eye
-                "ID_6": 1.0,   # Cap
+                "ID_1": None,                       # Invalid Image
+                "ID_2": None,                       # NSFW
+                "ID_3": None,                       # No Face
+                "ID_4": None,                       # Multiple Faces                       
+                "ID_5": 1.0,                       # Eye
+                "ID_6": 1.0,                       # Cap
             },
             "confidence_scores": confidence_scores
         }
@@ -667,9 +672,11 @@ def get_result(base64_image):
     print("\n\nCOMBINED RESULT:")
     print(f" \n Insight Face Result: {Face_Result}, \n Media pipe Result: {Result2}, \n Clip B/32 Result: {Result3}, \n yolo Result: {Result4}, \n")
     print(f"------------------------------------------------------------------------------------------------------------------------------------")
+    # print(f"\n Insight Face Error: {error1}, \n Media pipe Error: {errormedia}, \n Clip B/32 Error: {errorclip}, \n yolo error: {erroryolo}, \n NSFW error: {errornsfw}.\n")
 
-    # Clean up temporary folders
-    # (You can remove or modify this part if needed)
+# Clean up temporary folder
+    # if os.path.exists(output_dir):
+        # shutil.rmtree(output_dir)
     
     # Returning Final Result
     return final_result
