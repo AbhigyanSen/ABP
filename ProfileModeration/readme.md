@@ -68,14 +68,16 @@ Install the libraries and start the **Gradio Server**.
 ```sh
 pip install torch torchvision ftfy regex tqdm open_clip_torch insightface pandas openpyxl requests onnxruntime onnxruntime insightface opencv-python-headless mediapipe face_recognition pillow ultralytics Flask gradio
 pip install git+https://github.com/openai/CLIP.git
+pip install paddlepaddle
+pip install "paddleocr>=2.0.1"
 ```
 ```sh
-python main.py
+python app.py
 ```
 or
 ```sh
 pip install -r requirements.txt
-python main.py
+python app.py
 ```
 
 ## Flow Diagram
