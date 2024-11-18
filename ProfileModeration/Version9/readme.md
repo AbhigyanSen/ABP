@@ -20,7 +20,6 @@ Is discarded due to not detecting faces properly.
 ## Flow Diagram
 ```mermaid
 graph LR
-graph LR
 A[Base64] --> B[Handling Base64]
 B --> BA(Image Downloaded) & BB(Error Downloading)
 BB --> BC((ERROR)) --> H
