@@ -1,4 +1,4 @@
-# Face Occlusion Detection - Version 9 (Discarded Version)
+# Face Occlusion Detection - Version 9 (Dummy Version)
 
 ## Overview
 > Version 9 of the Face Occlusion Detection project introduces significant improvements and optimizations in the image processing pipeline. This update focuses on enhancing image handling (support for base64 image data), refactoring functions for better modularity, and improving model performance for NSFW detection, face cropping, and classification tasks.
