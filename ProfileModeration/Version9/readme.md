@@ -16,7 +16,7 @@
 - NSFW detection was performed using a pre-trained ViT-based model.
 
 ### Version 10:
-- **Input Types: Supports both Image URL and Base64-encoded Image Data.
+- **Input Types:** Supports both Image URL and Base64-encoded Image Data.
 - **Face Detection:** Refined face detection using InsightFace and MediaPipe.
 - **Face Cropping:** Direct image handling with PIL images instead of NumPy arrays for better compatibility.
 - **Eyewear and Headwear Detection:** Uses CLIP and RN101 models for classifying eyewear and headwear.
