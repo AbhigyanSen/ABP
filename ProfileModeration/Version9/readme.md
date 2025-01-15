@@ -1,7 +1,7 @@
-# Profile Moderation System - Version 10 (Gradio Testing)
+# Face Occlusion Detection - Version 9 (Discarded Version)
 
 ## Overview
-> Version 10 of the Profile Moderation System integrates advanced image processing techniques and AI models for image validation and testing it using Gradio. This version introduces improved modularity and enhanced performance for NSFW detection, face cropping, eyewear detection, and object classification. It supports image URLs, base64-encoded image data, and provides a seamless experience in moderating profile images.
+> Version 9 of the Face Occlusion Detection project introduces significant improvements and optimizations in the image processing pipeline. This update focuses on enhancing image handling (support for base64 image data), refactoring functions for better modularity, and improving model performance for NSFW detection, face cropping, and classification tasks.
 
 ## Model Configuration Update
 
@@ -27,7 +27,7 @@
 ## Flow Diagram
 ```mermaid
 graph LR
-A[Base64] --> B[Handling Base64]
+A[Insert Base64] --> B[Base64 Handling]
 B --> BA(Image Downloaded) & BB(Error Downloading)
 BB --> BC((ERROR)) --> H
 BA --> C[Face Detection]
