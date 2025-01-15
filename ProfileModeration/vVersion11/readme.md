@@ -9,7 +9,8 @@
 - **Log File Modifications** Modifying the log file for debugging.
 
 ## Flow Diagram
-'''mermaid
+```mermaid
+graph LR
 A[Insert Base64] --> B[Base64 Handling]
 B --> BA(Image Downloaded) & BB(Error Downloading)
 BB --> BC((ERROR)) --> H
